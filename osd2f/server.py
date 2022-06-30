@@ -36,6 +36,10 @@ async def stop_database():
 
 async def render_page(pagename: str):
     """Get the specified page-specification from the content settings and render it."""
+
+    # @ToDo check for Survey mode and block if necessary
+    # app.config["BLOCK_RENDERING"]
+
     settings = await utils.load_content_settings(use_cache=not app.debug)
     if pagename not in settings.static_pages.keys():
         await database.insert_log(
@@ -234,6 +238,47 @@ async def log():
         user_agent_string=request.headers["User-Agent"],
     )
     return "", 200
+
+
+@app.route("/survey", methods=["GET", "POST"])
+async def survey():
+    if request.method == "GET":
+        # @ToDo: change hard-coded version number into something more dynamic
+        app_version = "0.0.1"
+        if app.env == "survey":
+            return jsonify({"success": True,
+                            "error": "",
+                            "version": app_version}), 200
+        else:
+            return jsonify({"success": False,
+                            "error": "OSD2F not running in Survey Mode",
+                            "version": app_version}), 200
+
+    elif request.method == "POST":
+        survey_configuration = await request.get_data()
+        try:
+            # @ToDo: store submitted configuration (incl. callback function and absolute base URL) in database
+            pass
+            # config = ContentSettings.parse_obj(survey_configuration)
+            # await set_content_config(user="default", content=config)
+        except ValueError:
+            logger.info("Invalid configuration format received")
+            await database.insert_log(
+                "survey",
+                "ERROR",
+                "unparsable configuration received",
+                user_agent_string=request.headers["User-Agent"],
+            )
+            return jsonify({"success": False, "error": "incorrect configuration format"}), 400
+        # @ToDo: render frontend pages and return in structured variables
+        js_inclusion = []
+        html_embed = ""
+        js_embed = ""
+        return jsonify({"success": True,
+                        "error": "",
+                        "js_inclusion": js_inclusion,
+                        "html_embed": html_embed,
+                        "js_embed": js_embed}), 200
 
 
 def create_app(

@@ -29,6 +29,9 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
 
+    # If True, no front pages are being rendered (e.g., in survey mode where API-based communication is preferred)
+    BLOCK_RENDERING = False
+
 
 class Testing(Config):
     TESTING = True
@@ -49,6 +52,11 @@ class Production(Config):
     SECRET_KEY = _os.environ.get("OSD2F_SECRET")
     DB_URL = _os.environ.get("OSD2F_DB_URL", "")
     SESSION_COOKIE_SECURE = True  # required HTTPS server
+
+
+# @ToDo change into "Production" as super class
+class Survey(Development):
+    BLOCK_RENDERING = True
 
 
 # hypercorn

@@ -3,6 +3,7 @@
 // for use áfter local filtering of fields
 // allows for advanced server-side anonymization
 export async function apply_adv_anonymization (fileobj) {
+  // @ToDo: for Survey mode, turn into absolute URL
   fileobj = await fetch('/adv_anonymize_file', {
     method: 'POST',
     mode: 'same-origin',
@@ -38,6 +39,7 @@ export const server = {
       params['entry'] = JSON.stringify(entry)
     }
 
+    // @ToDo: for Survey mode, turn into absolute URL
     fetch('/log?' + new URLSearchParams(params), {
       method: 'GET',
       mode: 'same-origin',

@@ -51,6 +51,7 @@ export default {
 
             server.log("INFO", "consent given, uploading file")
 
+            // @ToDo: for Survey mode, turn into absolute URL
             fetch('/upload', {
                 method: 'POST',
                 mode: 'same-origin',
@@ -68,10 +69,12 @@ export default {
                 this.$bvModal.hide("consent-modal")
                 this.$parent.$parent.donations = []
                 document.getElementById('thankyou').classList.remove('invisible')
+                // @Todo in survey mode, JS callback needs to be called here
             })
             .catch(error => {
             console.log('Error', error)
             server.log("ERROR", "failed to upload file")
+            // @Todo in survey mode, JS callback needs to be called here
             })
 
         }

@@ -5,7 +5,7 @@ from .logger import logger
 from .server import create_app, start_app
 
 if mode := os.environ.get("OSD2F_MODE"):
-    assert mode in ("Development", "Testing", "Production")
+    assert mode in ("Development", "Testing", "Production", "Survey")
 else:
     logger.critical("`OSD2F_MODE` must be set")
 
