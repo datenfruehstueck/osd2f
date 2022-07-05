@@ -50,9 +50,9 @@ The request is directed at the OSD2F installation's base URL with the endpoint `
   "upload": {
     "(^|/|\\)comments.json": {
       "in_key": "comment_information",
-      "anonymizers": {
-        "redact_text": ""
-      },
+      "anonymizers": [
+        { "redact_text": "" }
+      ],
       "accepted_fields": [
         "timestamp",
         "title",
