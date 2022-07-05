@@ -12,6 +12,8 @@ from quart import Quart, redirect, render_template, request, session
 from quart.json import jsonify
 from quart.wrappers.response import Response
 
+from pydantic import ValidationError
+
 from .anonymizers import anonymize_submission
 from .logger import logger
 from .definitions import ContentSettings, UploadSettings
@@ -265,28 +267,6 @@ async def survey():
                             "version": app_version}), 200
 
     elif request.method == "POST":
-        post_config_data = json.loads(await request.get_data())
-        config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
-                                                    "project_title": post_config_data['project_title'],
-                                                    "upload_page": post_config_data['content'],
-                                                    "static_pages": {}})
-        await set_content_config(user=post_config_data['admin_email'],
-                                 content=config_content)
-        await database.insert_log(
-            "survey",
-            "INFO",
-            "survey configuration received and successfully stored as content configuration",
-            user_agent_string=request.headers["User-Agent"],
-        )
-
-        config_upload = UploadSettings.parse_obj({"files": post_config_data['upload']})
-        await database.insert_log(
-            "survey",
-            "INFO",
-            "survey configuration received and successfully stored as upload configuration",
-            user_agent_string=request.headers["User-Agent"],
-        )
-
         try:
             post_config_data = json.loads(await request.get_data())
             config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
@@ -310,8 +290,7 @@ async def survey():
                 user_agent_string=request.headers["User-Agent"],
             )
 
-        # @ToDo ValueError so far not caught
-        except ValueError as error:
+        except ValidationError as error:
             logger.info("Invalid configuration format received")
             await database.insert_log(
                 "survey",
