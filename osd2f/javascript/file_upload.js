@@ -135,6 +135,7 @@ export const fileLoadController = async function (sid, settings, files) {
     fileob['submission_id'] = sid
     fileob['n_deleted'] = 0
     try {
+      // @ToDo allow for file types other than JSON (insbes. HTML and JS)
       server.log('INFO', 'file parsing', window.sid, {
         file_match: setmatch[f.name]
       })

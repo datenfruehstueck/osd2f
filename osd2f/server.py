@@ -8,13 +8,14 @@ from osd2f.definitions import Submission, SubmissionList
 from osd2f.security.authorization import USER_FIELD
 from osd2f.security.entry_encryption.secure_entry_singleton import SecureEntry
 
-
 from quart import Quart, redirect, render_template, request, session
 from quart.json import jsonify
 from quart.wrappers.response import Response
 
 from .anonymizers import anonymize_submission
 from .logger import logger
+from .definitions import ContentSettings, UploadSettings
+from .database import set_content_config
 
 app = Quart(__name__)
 
@@ -37,8 +38,17 @@ async def stop_database():
 async def render_page(pagename: str):
     """Get the specified page-specification from the content settings and render it."""
 
-    # @ToDo check for Survey mode and block if necessary
-    # app.config["BLOCK_RENDERING"]
+    if app.env == "survey":
+        if app.config['BLOCK_RENDERING']:
+            await database.insert_log(
+                "survey",
+                "ERROR",
+                "page rendering requested but blocked due to survey mode",
+                entry={"pagename": pagename},
+                user_agent_string=request.headers["User-Agent"],
+            )
+            return jsonify({"success": False,
+                            "error": "page unavailable"}), 400
 
     settings = await utils.load_content_settings(use_cache=not app.debug)
     if pagename not in settings.static_pages.keys():
@@ -243,7 +253,7 @@ async def log():
 @app.route("/survey", methods=["GET", "POST"])
 async def survey():
     if request.method == "GET":
-        # @ToDo: change hard-coded version number into something more dynamic
+        # @ToDo: change hard-coded version number into setup.py/version
         app_version = "0.0.1"
         if app.env == "survey":
             return jsonify({"success": True,
@@ -255,13 +265,53 @@ async def survey():
                             "version": app_version}), 200
 
     elif request.method == "POST":
-        survey_configuration = await request.get_data()
+        post_config_data = json.loads(await request.get_data())
+        config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
+                                                    "project_title": post_config_data['project_title'],
+                                                    "upload_page": post_config_data['content'],
+                                                    "static_pages": {}})
+        await set_content_config(user=post_config_data['admin_email'],
+                                 content=config_content)
+        await database.insert_log(
+            "survey",
+            "INFO",
+            "survey configuration received and successfully stored as content configuration",
+            user_agent_string=request.headers["User-Agent"],
+        )
+
+        config_upload = UploadSettings.parse_obj({"files": post_config_data['upload']})
+        await database.insert_log(
+            "survey",
+            "INFO",
+            "survey configuration received and successfully stored as upload configuration",
+            user_agent_string=request.headers["User-Agent"],
+        )
+
         try:
-            # @ToDo: store submitted configuration (incl. callback function and absolute base URL) in database
-            pass
-            # config = ContentSettings.parse_obj(survey_configuration)
-            # await set_content_config(user="default", content=config)
-        except ValueError:
+            post_config_data = json.loads(await request.get_data())
+            config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
+                                                        "project_title": post_config_data['project_title'],
+                                                        "upload_page": post_config_data['content'],
+                                                        "static_pages": {}})
+            await set_content_config(user=post_config_data['admin_email'],
+                                     content=config_content)
+            await database.insert_log(
+                "survey",
+                "INFO",
+                "survey configuration received and successfully stored as content configuration",
+                user_agent_string=request.headers["User-Agent"],
+            )
+
+            config_upload = UploadSettings.parse_obj({"files": post_config_data['upload']})
+            await database.insert_log(
+                "survey",
+                "INFO",
+                "survey configuration received and successfully stored as upload configuration",
+                user_agent_string=request.headers["User-Agent"],
+            )
+
+        # @ToDo ValueError so far not caught
+        except ValueError as error:
             logger.info("Invalid configuration format received")
             await database.insert_log(
                 "survey",
@@ -269,16 +319,28 @@ async def survey():
                 "unparsable configuration received",
                 user_agent_string=request.headers["User-Agent"],
             )
-            return jsonify({"success": False, "error": "incorrect configuration format"}), 400
-        # @ToDo: render frontend pages and return in structured variables
-        js_inclusion = []
-        html_embed = ""
-        js_embed = ""
-        return jsonify({"success": True,
-                        "error": "",
-                        "js_inclusion": js_inclusion,
-                        "html_embed": html_embed,
-                        "js_embed": js_embed}), 200
+            return jsonify({"success": False,
+                            "error": f"Incorrect configuration format: {str(error)}"}), 400
+
+        else:
+            await database.insert_log(
+                "server",
+                "INFO",
+                "upload page rendered for survey mode",
+                user_agent_string=request.headers["User-Agent"],
+            )
+            html_embed = await render_template("formats/upload_template.html.jinja",
+                                               content_settings=config_content,
+                                               upload_settings=config_upload,
+                                               sid="test",
+                                               all_links_new_tab=True)
+            js_inclusion = []
+            js_embed = ""
+            return jsonify({"success": True,
+                            "error": "",
+                            "js_inclusion": js_inclusion,
+                            "html_embed": html_embed,
+                            "js_embed": js_embed}), 200
 
 
 def create_app(
