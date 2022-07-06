@@ -19,6 +19,8 @@ from .logger import logger
 from .definitions import ContentSettings, UploadSettings
 from .database import set_content_config
 
+from setup import osd2f_version
+
 app = Quart(__name__)
 
 
@@ -255,16 +257,14 @@ async def log():
 @app.route("/survey", methods=["GET", "POST"])
 async def survey():
     if request.method == "GET":
-        # @ToDo: change hard-coded version number into setup.py/version
-        app_version = "0.0.1"
         if app.env == "survey":
             return jsonify({"success": True,
                             "error": "",
-                            "version": app_version}), 200
+                            "version": osd2f_version}), 200
         else:
             return jsonify({"success": False,
                             "error": "OSD2F not running in Survey Mode",
-                            "version": app_version}), 200
+                            "version": osd2f_version}), 200
 
     elif request.method == "POST":
         try:
