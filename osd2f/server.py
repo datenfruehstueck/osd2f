@@ -7,6 +7,7 @@ from osd2f import config, database, security, utils
 from osd2f.definitions import Submission, SubmissionList
 from osd2f.security.authorization import USER_FIELD
 from osd2f.security.entry_encryption.secure_entry_singleton import SecureEntry
+from osd2f.utils import OSD2F_VERSION
 
 from quart import Quart, redirect, render_template, request, session
 from quart.json import jsonify
@@ -18,8 +19,6 @@ from .anonymizers import anonymize_submission
 from .logger import logger
 from .definitions import ContentSettings, UploadSettings
 from .database import set_content_config
-
-from setup import osd2f_version
 
 app = Quart(__name__)
 
@@ -260,11 +259,11 @@ async def survey():
         if app.env == "survey":
             return jsonify({"success": True,
                             "error": "",
-                            "version": osd2f_version}), 200
+                            "version": OSD2F_VERSION}), 200
         else:
             return jsonify({"success": False,
                             "error": "OSD2F not running in Survey Mode",
-                            "version": osd2f_version}), 200
+                            "version": OSD2F_VERSION}), 200
 
     elif request.method == "POST":
         try:
