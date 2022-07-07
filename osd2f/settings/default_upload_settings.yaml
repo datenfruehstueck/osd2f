@@ -1,5 +1,27 @@
 # Sample Platform upload settings
 files:
+  tweet.js:
+    in_key: "data"
+    accepted_fields:
+      - tweet.full_text
+      - tweet.favorite_count
+  Abos.csv:
+    in_key: "data"
+    accepted_fields:
+      - Kanal-ID
+      - Kanal-URL
+      - Kanaltitel
+  Wiedergabeverlauf.html:
+    in_key: "data"
+    accepted_fields:
+      - video_url
+      - video_title
+      - channel
+    html_css_element: ".outer-cell"
+    html_css_fields:
+      - "a:first-child": "href"
+      - "a:first-child": "text"
+      - "a:nth-of-type(2)": "text"
   (^|/|\\)comments.json:
     # in key is required when the initial level of data
     # is not a list but an object (e.g. {} instead of [])

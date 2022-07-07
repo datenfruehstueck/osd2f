@@ -8,8 +8,9 @@ class FileSetting(BaseModel):
     in_key: Optional[str]
     accepted_fields: List[str]
     anonymizers: Optional[List[Dict[str, str]]]
-    headline: Optional[str]
-    is_timestamp: Optional[bool]
+    headlines: Optional[List[str]]
+    html_css_element: Optional[str]
+    html_css_fields: Optional[List[Dict[str, str]]]
 
 
 class UploadSettings(BaseModel):
