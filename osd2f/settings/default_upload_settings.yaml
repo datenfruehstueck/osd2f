@@ -17,11 +17,13 @@ files:
       - video_url
       - video_title
       - channel
+      - time
     html_css_element: ".outer-cell"
     html_css_fields:
       - "a:first-child": "href"
       - "a:first-child": "text"
       - "a:nth-of-type(2)": "text"
+      - ".content-cell": "text-pure"
   (^|/|\\)comments.json:
     # in key is required when the initial level of data
     # is not a list but an object (e.g. {} instead of [])
