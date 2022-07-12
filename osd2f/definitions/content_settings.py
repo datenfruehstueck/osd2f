@@ -108,6 +108,8 @@ class ContentSettings(BaseModel):
     contact_us: EmailStr
     static_pages: Dict[PageTypeEnum, ContentPage]
     upload_page: UploadPage
+    survey_base_url: Optional[str]
+    survey_js_callback: Optional[str]
 
     class Config:
         use_enum_values = True

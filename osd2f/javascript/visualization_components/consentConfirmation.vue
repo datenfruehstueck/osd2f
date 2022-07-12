@@ -51,8 +51,11 @@ export default {
 
             server.log("INFO", "consent given, uploading file")
 
-            // @ToDo: for Survey mode, turn into absolute URL
-            fetch('/upload', {
+            let url = '/upload'
+            if (content['survey_base_url']) {
+                url = content['survey_base_url'] + 'upload'
+            }
+            fetch(url, {
                 method: 'POST',
                 mode: 'same-origin',
                 credentials: 'same-origin',
@@ -62,19 +65,33 @@ export default {
                 body: JSON.stringify(this.donations)
             })
             .then(() => {
-            // remove processing queue
+                // @ToDo in survey mode, create donations summary
+                let callback_files
+                if (content['survey_js_callback']) {
+                    callback_files = this.$parent.$parent.donations
+                }
+
+                // remove processing queue
                 this.processing = false
                 noDonationYet = false
                 this.show = false
                 this.$bvModal.hide("consent-modal")
                 this.$parent.$parent.donations = []
                 document.getElementById('thankyou').classList.remove('invisible')
-                // @Todo in survey mode, JS callback needs to be called here
+
+                // in survey mode, call callback function
+                if (content['survey_js_callback']) {
+                    content['survey_js_callback'](true, "", callback_files)
+                }
             })
             .catch(error => {
-            console.log('Error', error)
-            server.log("ERROR", "failed to upload file")
-            // @Todo in survey mode, JS callback needs to be called here
+                console.log('Error', error)
+                server.log("ERROR", "failed to upload file")
+
+                // in survey mode, call callback function
+                if (content['survey_js_callback']) {
+                    content['survey_js_callback'](false, error)
+                }
             })
 
         }

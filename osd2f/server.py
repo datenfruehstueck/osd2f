@@ -271,7 +271,9 @@ async def survey():
             config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
                                                         "project_title": post_config_data['project_title'],
                                                         "upload_page": post_config_data['content'],
-                                                        "static_pages": {}})
+                                                        "static_pages": {},
+                                                        "survey_base_url": request.base_url.replace('/survey', '/'),
+                                                        "survey_js_callback": post_config_data['js_callback_after_upload']})
             await set_content_config(user=post_config_data['admin_email'],
                                      content=config_content)
             await database.insert_log(

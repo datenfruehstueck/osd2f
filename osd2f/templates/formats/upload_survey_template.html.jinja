@@ -97,8 +97,11 @@
     <script>
         let settings = {{ upload_settings.json()|safe }};
         let content = {{ content_settings.json()|safe }};
-        // @ToDo add JS callback
-        // @ToDo add base URL (for JS files)
+        console.log(settings);
+        console.log(content);
+
+        window.settings = settings;
+        window.content = content;
 
         let dropArea = document.getElementById("drop-area");
 
