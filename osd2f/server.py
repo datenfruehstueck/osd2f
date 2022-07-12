@@ -309,18 +309,21 @@ async def survey():
                 "upload page rendered for survey mode",
                 user_agent_string=request.headers["User-Agent"],
             )
-            html_embed = await render_template("formats/upload_template.html.jinja",
-                                               content_settings=config_content,
-                                               upload_settings=config_upload,
-                                               sid="test",
-                                               all_links_new_tab=True)
-            js_inclusion = []
-            js_embed = ""
-            return jsonify({"success": True,
-                            "error": "",
-                            "js_inclusion": js_inclusion,
-                            "html_embed": html_embed,
-                            "js_embed": js_embed}), 200
+            return jsonify({
+                "success": True,
+                "error": "",
+                "head_inclusion": [
+                    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
+                    "https://code.jquery.com/jquery-3.5.1.slim.min.js",
+                    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+                ],
+                "html_embed": await render_template("formats/upload_survey_template.html.jinja",
+                                                    content_settings=config_content,
+                                                    upload_settings=config_upload),
+                "js_embed": await render_template("formats/upload_survey_script.html.jinja",
+                                                    content_settings=config_content,
+                                                    upload_settings=config_upload)
+            }), 200
 
 
 def create_app(

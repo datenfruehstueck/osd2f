@@ -121,7 +121,7 @@ The response to the request is a JSON object that looks as follows.
 {
   "success": true,
   "error": "",
-  "js_inclusion": [],
+  "head_inclusion": [],
   "html_embed": "",
   "js_embed": ""
 }

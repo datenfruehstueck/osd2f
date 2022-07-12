@@ -1,0 +1,38 @@
+<!-- parsing script -->
+<script src="{{content_settings.survey_base_url}}static/js/main.js"></script>
+
+<!-- page functionality related to presentation -->
+<script>
+    let settings = {{ upload_settings.json()|safe }};
+    let content = {{ content_settings.json()|safe }};
+
+    window.settings = settings;
+    window.content = content;
+
+    let dropArea = document.getElementById("drop-area");
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false)
+    })
+
+    function preventDefaults(e) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false)
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false)
+    })
+
+    function highlight(e) {
+        dropArea.classList.add('highlight')
+    }
+
+    function unhighlight(e) {
+        dropArea.classList.remove('highlight')
+    }
+</script>
