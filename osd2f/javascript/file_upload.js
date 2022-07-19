@@ -17,7 +17,14 @@ export { server } from './server_interaction'
 server.log('INFO', 'loaded js')
 
 // loads the zipfile reading WASM libraries
-Archive.init({ workerUrl: '/static/js/libarchive/worker-bundle.js' })
+let url = '/static/js/libarchive/worker-bundle.js'
+// @ToDo double-check libarchivejs with https://github.com/nika-begiashvili/libarchivejs
+// maybe push worker-bundle to to-be-included stuff into server response
+// and make sure URL is correct in Archive.init({ ... }) in file_upload.js
+if (window.content != undefined && window.content['survey_base_url'] != undefined) {
+  url = window.content['survey_base_url'] + 'static/js/libarchive/worker-bundle.js'
+}
+Archive.init({ workerUrl: url })
 
 server.log('INFO', 'initialized archive worker')
 
