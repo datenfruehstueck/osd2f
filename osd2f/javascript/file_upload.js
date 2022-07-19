@@ -14,6 +14,8 @@ import { ParseJSON } from './parsing/jsonparsing'
 export { visualize as vis } from './visualize'
 export { server } from './server_interaction'
 
+import Papa from 'papaparse'
+
 server.log('INFO', 'loaded js')
 
 // loads the zipfile reading WASM libraries
@@ -146,16 +148,81 @@ export const fileLoadController = async function (sid, settings, files) {
     fileob['submission_id'] = sid
     fileob['n_deleted'] = 0
     try {
-      // @ToDo allow for file types other than JSON (insbes. HTML and JS)
+      if (RegExp('.*.csv$').exec(f.name) != null) {
+        server.log('INFO', 'file identified as CSV, reparsing into JSON')
+        if (settings['files'][setmatch[f.name]].csv_skip_n_lines_at_top > 0) {
+          let content_array = content.split('\n')
+          content_array.splice(0, settings['files'][setmatch[f.name]].csv_skip_n_lines_at_top)
+          content = content_array.join('\n')
+        }
+        content = '{ "data": ' + JSON.stringify(Papa.parse(content, { header: true, skipEmptyLines: 'greedy' })['data']) + '}'
+      }
+
+      if (RegExp('.*.js$').exec(f.name) != null) {
+        server.log('INFO', 'file identified as JS, likely from Twitter, reparsing into JSON with main "data" object')
+        let position_first_linebreak = content.indexOf('\n')
+        if (position_first_linebreak < 0) {
+          content = '{ "data": [] }'
+        } else {
+          content = '{ "data": [' + content.substring(position_first_linebreak) + ' }'
+        }
+      }
+
       server.log('INFO', 'file parsing', window.sid, {
         file_match: setmatch[f.name]
       })
-      fileob['entries'] = fileReader(
-        settings['files'][setmatch[f.name]].accepted_fields,
-        ParseJSON(content), // custom to support malformed
-        null,
-        settings['files'][setmatch[f.name]].in_key
-      )
+
+      if (RegExp('.*.html$').exec(f.name) != null) {
+        server.log('INFO', 'file identified as HTML, reparsing into JSON')
+        let htmlParser = new DOMParser()
+        let htmlParsedDoc = htmlParser.parseFromString(content, 'text/html')
+        let htmlParsedElements = htmlParsedDoc.querySelectorAll(settings['files'][setmatch[f.name]].html_css_element)
+        fileob['entries'] = []
+        let i
+        for (i = 0; i < htmlParsedElements.length; i++) {
+          let element = htmlParsedElements[i]
+          let elementEntry = {}
+          let j
+          for (j = 0; j < settings['files'][setmatch[f.name]].html_css_fields.length; j++) {
+            let field = element
+            let field_key = Object.keys(settings['files'][setmatch[f.name]].html_css_fields[j])[0]
+            if (field_key != ':current') {
+                field = element.querySelector(field_key)
+            }
+            let field_content = Object.values(settings['files'][setmatch[f.name]].html_css_fields[j])[0]
+            if (field_content == 'text') {
+              elementEntry[settings['files'][setmatch[f.name]].accepted_fields[j]] = field.textContent
+            } else if (field_content == 'text-pure') {
+              let field_child = field.lastElementChild
+              while (field_child) {
+                field.removeChild(field_child)
+                field_child = field.lastElementChild
+              }
+              elementEntry[settings['files'][setmatch[f.name]].accepted_fields[j]] = field.textContent
+            } else {
+              elementEntry[settings['files'][setmatch[f.name]].accepted_fields[j]] = field.getAttribute(field_content)
+            }
+          }
+          fileob['entries'].push(elementEntry)
+        }
+        server.log('DEBUG', JSON.stringify(fileob['entries']))
+      } else {
+        fileob['entries'] = fileReader(
+          settings['files'][setmatch[f.name]].accepted_fields,
+          ParseJSON(content),
+          null,
+          settings['files'][setmatch[f.name]].in_key
+        )
+      }
+
+      if (RegExp('.*.js$').exec(f.name) == null &&
+          RegExp('.*.csv$').exec(f.name) == null &&
+          RegExp('.*.html$').exec(f.name) == null) {
+
+        server.log('INFO', 'reparsing file to UTF8')
+        fileob = reparseAsUTF8(fileob)
+      }
+
       server.log('INFO', 'reparsing file to UTF8')
       try {
         fileob = reparseAsUTF8(fileob)
