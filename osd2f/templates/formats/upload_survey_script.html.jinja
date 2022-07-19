@@ -1,14 +1,16 @@
+<!-- page configuration -->
+<script>
+    window.settings = {{ upload_settings.json(ensure_ascii=False)|safe }};
+    window.content = {{ content_settings.json(ensure_ascii=False)|safe }};
+    let sid = {{sid|tojson|safe}};
+    window.sid = sid;
+</script>
+
 <!-- parsing script -->
 <script src="{{content_settings.survey_base_url}}static/js/main.js"></script>
 
 <!-- page functionality related to presentation -->
 <script>
-    let settings = {{ upload_settings.json()|safe }};
-    let content = {{ content_settings.json()|safe }};
-
-    window.settings = settings;
-    window.content = content;
-
     let dropArea = document.getElementById("drop-area");
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -35,4 +37,7 @@
     function unhighlight(e) {
         dropArea.classList.remove('highlight')
     }
+
+    // tracking whether the donation has been completed is disabled but this variable is needed nevertheless
+    let noDonationYet=true
 </script>
