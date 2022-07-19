@@ -314,6 +314,7 @@ async def survey():
                 "upload page rendered for survey mode",
                 user_agent_string=request.headers["User-Agent"],
             )
+            sid_placeholder = "### SURVEY-TOOL-RESPONDENT-IDENTIFIER ###"
             return jsonify({
                 "success": True,
                 "error": "",
@@ -327,7 +328,9 @@ async def survey():
                                                     upload_settings=config_upload),
                 "js_embed": await render_template("formats/upload_survey_script.html.jinja",
                                                     content_settings=config_content,
-                                                    upload_settings=config_upload)
+                                                    upload_settings=config_upload,
+                                                    sid=sid_placeholder),
+                "js_embed_suvey_id_placeholder": sid_placeholder
             }), 200
 
 

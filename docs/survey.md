@@ -10,10 +10,10 @@ This page describes how this integration is specified. Ideally, this should help
 
 ## Workflow
 
-1. _OSD2F_: Is deployed and runs on a server with the survey mode enabled. An enabled survey mode allows for the survey tool to contact OSD2F directly. The mode also prohibits any other public requests to the platform.
+1. _OSD2F_: Is deployed and runs on a server with the survey mode enabled. An enabled survey mode allows for the survey tool to contact OSD2F directly. The mode also disables the usual user interface to the platform.
 1. **Survey Tool**: During questionnaire setup, the URL to the OSD2F server is entered by the user. If necessary, the survey tool could then already reach out to the OSD2F server to check for version compatibility.
 1. **Survey Tool**: After setup, the the survey tool can then contact the OSD2F server along with (a) configuration, (b) message/language details, and (c) a JavaScript callback function name. As a response, OSD2F offers a status as well as instructions on (a) the HTML code to present and (b) the JavaScript code to embed. 
-1. **Survey Tool**: During actual participation, the OSD2F-provided HTML code is presented and the OSD2F-provided JavaScript code is embedded. If a user uploads something, OSD2F receives the data through its `/upload` URL endpoint and is thus able to directly manipulate the HTML code to present the uploaded (anonymized) data and to allow filter modalities. Ultimately, users consent and click the donate button (which is presented in the survey tool but originates from OSD2F).
+1. **Survey Tool**: During actual participation, the OSD2F-provided HTML code is presented and the OSD2F-provided JavaScript code is embedded. Therein, an identifier for the current respondent can be placed (usually, this is a pseudonymized ID). If a user uploads something, OSD2F receives the data through its `/upload` URL endpoint and is thus able to directly manipulate the HTML code to present the uploaded (anonymized) data and to allow filter modalities. Ultimately, users consent and click the donate button (which is presented in the survey tool but originates from OSD2F).
 1. _OSD2F_: Through its JavaScript embedding, OSD2F is able to, in case of errors or in case of final success, call the survey tool's callback function.
 1. **Survey Tool**: Once the callback function is called, the survey tool could proceed to the next page or allow the user to continue.
 
@@ -123,7 +123,8 @@ The response to the request is a JSON object that looks as follows.
   "error": "",
   "head_inclusion": [],
   "html_embed": "",
-  "js_embed": ""
+  "js_embed": "",
+  "js_embed_suvey_id_placeholder": ""
 }
 ```
 
@@ -134,3 +135,4 @@ The response to the request is a JSON object that looks as follows.
 - js_inclusion: array with FQDN to JavaScript files to be included in the HTML header when a participant answers a data donation item (could, by the survey tool, be downloaded and served locally)
 - html_embed: string with HTML code to be put into the position where the data donation item is placed
 - js_embed: string with JavaScript code to be put into the HTML code after (!) the embedded HTML code
+- js_embed_survey_id_placeholder: inside *js_embed*, a placeholder is included which, in production, can/should be replaced with an identifier from the survey tool to later connect survey responses with donated data; this parameter holds the placeholder as a string (usually, this is `### SURVEY-TOOL-RESPONDENT-IDENTIFIER ###`) 
