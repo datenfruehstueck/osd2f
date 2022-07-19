@@ -1,16 +1,18 @@
 'use strict'
 
-// for use áfter local filtering of fields
+// for use after local filtering of fields
 // allows for advanced server-side anonymization
 export async function apply_adv_anonymization (fileobj) {
   let url = '/adv_anonymize_file'
-  if (typeof(window['content']) !== 'undefined' && window.content['survey_base_url']) {
+  if (window.content != undefined && window.content['survey_base_url'] != undefined) {
     url = window.content['survey_base_url'] + 'adv_anonymize_file'
   }
   fileobj = await fetch(url, {
     method: 'POST',
-    mode: 'same-origin',
-    credentials: 'same-origin',
+    //mode: 'same-origin',
+    mode: 'cors',
+    //credentials: 'same-origin',
+    credentials: 'omit',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -43,13 +45,16 @@ export const server = {
     }
 
     let url = '/log?'
-    if (typeof(window['content']) !== 'undefined' && window.content['survey_base_url']) {
+    if (window.content != undefined && window.content['survey_base_url'] != undefined) {
       url = window.content['survey_base_url'] + 'log?'
     }
+
     fetch(url + new URLSearchParams(params), {
       method: 'GET',
-      mode: 'same-origin',
-      credentials: 'same-origin'
+      //mode: 'same-origin',
+      mode: 'no-cors',
+      //credentials: 'same-origin'
+      credentials: 'omit'
     })
       .then(r => {})
       .catch(e => {

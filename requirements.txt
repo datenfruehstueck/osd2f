@@ -107,6 +107,8 @@ pyzipper==0.3.5
     # via OSD2F (setup.py)
 quart==0.17.0
     # via OSD2F (setup.py)
+quart-cors==0.5.0
+    # via OSD2F (setup.py)
 requests-oauthlib==1.3.1
     # via msrest
 requests==2.27.1

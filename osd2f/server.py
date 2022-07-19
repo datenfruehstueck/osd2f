@@ -13,6 +13,8 @@ from quart import Quart, redirect, render_template, request, session
 from quart.json import jsonify
 from quart.wrappers.response import Response
 
+from quart_cors import route_cors
+
 from pydantic import ValidationError
 
 from .anonymizers import anonymize_submission
@@ -93,6 +95,7 @@ async def donate():
 
 
 @app.route("/upload", methods=["GET", "POST"])
+@route_cors(allow_origin="*")
 async def upload():
     # for users visiting the page
     if request.method == "GET":
@@ -207,6 +210,7 @@ async def downloads(items: str = None, filetype: str = None, zipext: str = None)
 
 
 @app.route("/adv_anonymize_file", methods=["POST"])
+@route_cors(allow_origin="*")
 async def adv_anonymize_file():
     data = await request.get_data()
     logger.debug(f"[anonymization] received: {data}")
@@ -254,6 +258,7 @@ async def log():
 
 
 @app.route("/survey", methods=["GET", "POST"])
+@route_cors(allow_origin="*")
 async def survey():
     if request.method == "GET":
         if app.env == "survey":
