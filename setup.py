@@ -38,6 +38,7 @@ setup(
         "pyjwt>=2.4.0",  # dependency of MSAL, insecure < 2.4.0
         "pyzipper",
         "quart",
+        "quart-cors",
         "tortoise-orm",
     ],
 )
