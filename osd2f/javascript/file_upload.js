@@ -21,6 +21,10 @@ Archive.init({ workerUrl: '/static/js/libarchive/worker-bundle.js' })
 
 server.log('INFO', 'initialized archive worker')
 
+if (typeof(sid) == undefined && typeof(window.sid) != undefined) {
+  let sid = window.sid;
+}
+
 // folderScanner handles folder uploads.
 const folderScanner = function (webkitEntry, files) {
   if (webkitEntry.isDirectory) {

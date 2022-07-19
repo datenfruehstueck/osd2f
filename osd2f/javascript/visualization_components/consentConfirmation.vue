@@ -52,23 +52,29 @@ export default {
             server.log("INFO", "consent given, uploading file")
 
             let url = '/upload'
-            if (content['survey_base_url']) {
-                url = content['survey_base_url'] + 'upload'
+            if (typeof(window['content']) !== 'undefined' && window.content['survey_base_url']) {
+                url = window.content['survey_base_url'] + 'upload'
             }
             fetch(url, {
                 method: 'POST',
-                mode: 'same-origin',
-                credentials: 'same-origin',
+                //mode: 'same-origin',
+                mode: 'no-cors',
+                //credentials: 'same-origin',
+                credentials: 'omit',
                 headers: {
                 'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(this.donations)
             })
             .then(() => {
-                // @ToDo in survey mode, create donations summary
-                let callback_files
-                if (content['survey_js_callback']) {
-                    callback_files = this.$parent.$parent.donations
+                let callback_files = {}
+                if (window.content != undefined && window.content['survey_js_callback'] != undefined) {
+                    for (let i = 0; i < this.$parent.$parent.donations.length; i++) {
+                        callback_files[this.$parent.$parent.donations[i].filename] = {
+                            'n_donated': this.$parent.$parent.donations[i].entries.length,
+                            'n_deleted': this.$parent.$parent.donations[i].n_deleted
+                        }
+                    }
                 }
 
                 // remove processing queue
@@ -80,8 +86,11 @@ export default {
                 document.getElementById('thankyou').classList.remove('invisible')
 
                 // in survey mode, call callback function
-                if (content['survey_js_callback']) {
-                    content['survey_js_callback'](true, "", callback_files)
+                if (window.content != undefined  && window.content['survey_js_callback'] != undefined) {
+                    let callback_function = window[window.content['survey_js_callback']]
+                    if (typeof(callback_function) == 'function') {
+                        callback_function(true, "", callback_files)
+                    }
                 }
             })
             .catch(error => {
@@ -89,8 +98,11 @@ export default {
                 server.log("ERROR", "failed to upload file")
 
                 // in survey mode, call callback function
-                if (content['survey_js_callback']) {
-                    content['survey_js_callback'](false, error)
+                if (window.content != undefined && window.content['survey_js_callback'] != undefined) {
+                    let callback_function = window[window.content['survey_js_callback']]
+                    if (typeof(callback_function) == 'function') {
+                        callback_function(false, error)
+                    }
                 }
             })
 
