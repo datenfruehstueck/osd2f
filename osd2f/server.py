@@ -321,7 +321,8 @@ async def survey():
                 "head_inclusion": [
                     "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
                     "https://code.jquery.com/jquery-3.5.1.slim.min.js",
-                    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+                    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js",
+                    request.base_url.replace('/survey', '/static/js/libarchive/worker-bundle.js')
                 ],
                 "html_embed": await render_template("formats/upload_survey_template.html.jinja",
                                                     content_settings=config_content,
