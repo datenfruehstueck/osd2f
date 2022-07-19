@@ -11,6 +11,12 @@ files:
       - Kanal-ID
       - Kanal-URL
       - Kanaltitel
+  Lieder.csv:
+    in_key: "data"
+    csv_skip_n_lines_at_top: 3
+    accepted_fields:
+      - Video-ID
+      - Zeitpunkt des Hinzufügens
   Wiedergabeverlauf.html:
     in_key: "data"
     accepted_fields:
@@ -24,6 +30,13 @@ files:
       - "a:first-child": "text"
       - "a:nth-of-type(2)": "text"
       - ".content-cell": "text-pure"
+  Meine Kommentare.html:
+    in_key: "data"
+    accepted_fields:
+      - kommentar
+    html_css_element: "li"
+    html_css_fields:
+      - ":current": "text-pure"
   (^|/|\\)comments.json:
     # in key is required when the initial level of data
     # is not a list but an object (e.g. {} instead of [])

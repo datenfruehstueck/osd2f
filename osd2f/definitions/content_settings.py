@@ -11,6 +11,7 @@ class FileSetting(BaseModel):
     headlines: Optional[List[str]]
     html_css_element: Optional[str]
     html_css_fields: Optional[List[Dict[str, str]]]
+    csv_skip_n_lines_at_top: Optional[int]
 
 
 class UploadSettings(BaseModel):
