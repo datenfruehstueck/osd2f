@@ -32,6 +32,9 @@ class Config:
     # If True, no front pages are being rendered (e.g., in survey mode where API-based communication is preferred)
     BLOCK_RENDERING = False
 
+    # set Umlaute (and other ASCII-translated chars) handling for json.dumps (here: remains unchanged)
+    JSON_AS_ASCII = True
+
 
 class Testing(Config):
     TESTING = True
@@ -57,6 +60,12 @@ class Production(Config):
 # @ToDo change into "Production" as super class
 class Survey(Development):
     BLOCK_RENDERING = True
+
+    # changing Umlaute-JSON behavior herer
+    # note that in the database, ASCII-translated chars are stored, though (e.g., \u00fc instaed of ü)
+    # this can also be fixed by simply installing the orjson package in the venv which will cause tortoise to use
+    # orjson.dumps (instead of json.dumps) which, by default, does not treat Umlaute
+    JSON_AS_ASCII = False
 
 
 # hypercorn
