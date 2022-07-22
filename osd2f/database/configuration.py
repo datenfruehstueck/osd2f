@@ -26,6 +26,15 @@ async def get_content_config() -> typing.Optional[DBConfigurationBlobs]:
     return config_item
 
 
+async def get_upload_config() -> typing.Optional[DBConfigurationBlobs]:
+    config_item = (
+        await DBConfigurationBlobs.filter(config_type="upload")
+        .order_by("-insert_timestamp")
+        .first()
+    )
+    return config_item
+
+
 async def set_content_config(user: str, content: ContentSettings):
     await DBConfigurationBlobs.create(
         insert_user=user, config_type="content", config_blob=content.json()

@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from .anonymizers import anonymize_submission
 from .logger import logger
 from .definitions import ContentSettings, UploadSettings
-from .database import set_content_config
+from .database import set_content_config, set_upload_config, get_content_config, get_upload_config
 
 app = Quart(__name__)
 
@@ -273,6 +273,7 @@ async def survey():
     elif request.method == "POST":
         try:
             post_config_data = json.loads(await request.get_data())
+
             config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
                                                         "project_title": post_config_data['project_title'],
                                                         "upload_page": post_config_data['content'],
@@ -281,58 +282,52 @@ async def survey():
                                                         "survey_js_callback": post_config_data['js_callback_after_upload']})
             await set_content_config(user=post_config_data['admin_email'],
                                      content=config_content)
-            await database.insert_log(
-                "survey",
-                "INFO",
-                "survey configuration received and successfully stored as content configuration",
-                user_agent_string=request.headers["User-Agent"],
-            )
+            await database.insert_log("survey",
+                                      "INFO",
+                                      "survey configuration received and successfully stored as content configuration",
+                                      user_agent_string=request.headers["User-Agent"])
+            config_content_db = await get_content_config()
 
             config_upload = UploadSettings.parse_obj({"files": post_config_data['upload']})
-            await database.insert_log(
-                "survey",
-                "INFO",
-                "survey configuration received and successfully stored as upload configuration",
-                user_agent_string=request.headers["User-Agent"],
-            )
+            await set_upload_config(user=post_config_data['admin_email'],
+                                    content=config_upload)
+            await database.insert_log("survey",
+                                      "INFO",
+                                      "survey configuration received and successfully stored as upload configuration",
+                                      user_agent_string=request.headers["User-Agent"])
+            config_upload_db = await get_upload_config()
 
         except ValidationError as error:
             logger.info("Invalid configuration format received")
-            await database.insert_log(
-                "survey",
-                "ERROR",
-                "unparsable configuration received",
-                user_agent_string=request.headers["User-Agent"],
-            )
+            await database.insert_log("survey",
+                                      "ERROR",
+                                      "unparsable configuration received",
+                                      user_agent_string=request.headers["User-Agent"])
             return jsonify({"success": False,
                             "error": f"Incorrect configuration format: {str(error)}"}), 400
 
         else:
-            await database.insert_log(
-                "server",
-                "INFO",
-                "upload page rendered for survey mode",
-                user_agent_string=request.headers["User-Agent"],
-            )
+            await database.insert_log("server",
+                                      "INFO",
+                                      "upload page rendered for survey mode",
+                                      user_agent_string=request.headers["User-Agent"])
             sid_placeholder = "### SURVEY-TOOL-RESPONDENT-IDENTIFIER ###"
-            return jsonify({
-                "success": True,
-                "error": "",
-                "head_inclusion": [
-                    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
-                    "https://code.jquery.com/jquery-3.5.1.slim.min.js",
-                    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js",
-                    request.base_url.replace('/survey', '/static/js/libarchive/worker-bundle.js')
-                ],
-                "html_embed": await render_template("formats/upload_survey_template.html.jinja",
-                                                    content_settings=config_content,
-                                                    upload_settings=config_upload),
-                "js_embed": await render_template("formats/upload_survey_script.html.jinja",
-                                                    content_settings=config_content,
-                                                    upload_settings=config_upload,
-                                                    sid=sid_placeholder),
-                "js_embed_suvey_id_placeholder": sid_placeholder
-            }), 200
+            return jsonify({"success": True,
+                            "error": "",
+                            "config_id_content": config_content_db.id,
+                            "config_id_upload": config_upload_db.id,
+                            "head_inclusion": ["https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
+                                               "https://code.jquery.com/jquery-3.5.1.slim.min.js",
+                                               "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js",
+                                               request.base_url.replace('/survey', '/static/js/main.js')],
+                            "html_embed": await render_template("formats/upload_survey_template.html.jinja",
+                                                                content_settings=config_content,
+                                                                upload_settings=config_upload),
+                            "js_embed": await render_template("formats/upload_survey_script.js.jinja",
+                                                              content_settings=config_content,
+                                                              upload_settings=config_upload,
+                                                              sid=sid_placeholder),
+                            "js_embed_suvey_id_placeholder": sid_placeholder}), 200
 
 
 def create_app(
