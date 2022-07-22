@@ -167,3 +167,8 @@ The response to the request is a JSON object that looks as follows.
 - js_embed: string with JavaScript code to be run after (!) the embedded HTML code is present in the DOM (either include it, encapsulated in `<script>` tags after the *html_embed* part or place it in a `window.onload` pipeline)
 - js_embed_placeholder_surveyid: inside *js_embed*, a placeholder is included which, in production, should be replaced with an identifier from the survey tool to later be able to link survey responses with donated data; this parameter holds the placeholder as a string (usually, this is `### SID ###`)
 - js_embed_placeholder_libarchivejs: inside *js_embed*, another placeholder is included which, if the survey tool and OSD2F run under separate domains, has to be replaced with the correct domain path to libarchive.js' *worker-bundle.js* (usually, the placeholder is `### LIBARCHIVE.JS ###` and should be replaced with something along the lines of `/static/js/libarchive.js/dist/worker-bundle.js`)
+
+
+## Tests
+
+Testing is somewhat complex due to the cross-domain aspect of this mode. Therefore, a separate [OSD2F Survey Test Station](https://github.com/datenfruehstueck/osd2f-survey-tests) has been developed where you can simply run and debug the survey mode. All details are explained in the [ReadMe of the respective repository](https://github.com/datenfruehstueck/osd2f-survey-tests).
