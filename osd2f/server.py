@@ -274,6 +274,15 @@ async def survey():
         try:
             post_config_data = json.loads(await request.get_data())
 
+            if app.config["SURVEY_TOKEN"] is None or app.config["SURVEY_TOKEN"] != post_config_data['token']:
+                await database.insert_log("survey",
+                                          "ERROR",
+                                          "accessed /survey endpoint without adequate SURVEY_TOKEN",
+                                          user_agent_string=request.headers["User-Agent"])
+                return jsonify({"success": False,
+                                "error": "Survey token missing or wrong",
+                                "version": OSD2F_VERSION}), 200
+
             config_content = ContentSettings.parse_obj({"contact_us": post_config_data['admin_email'],
                                                         "project_title": post_config_data['project_title'],
                                                         "upload_page": post_config_data['content'],
@@ -311,23 +320,27 @@ async def survey():
                                       "INFO",
                                       "upload page rendered for survey mode",
                                       user_agent_string=request.headers["User-Agent"])
-            sid_placeholder = "### SURVEY-TOOL-RESPONDENT-IDENTIFIER ###"
+            placeholder_sid = "### SID ###"
+            placeholder_libarchivejs = "### LIBARCHIVE.JS ###"
             return jsonify({"success": True,
                             "error": "",
                             "config_id_content": config_content_db.id,
                             "config_id_upload": config_upload_db.id,
                             "head_inclusion": ["https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
                                                "https://code.jquery.com/jquery-3.5.1.slim.min.js",
-                                               "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js",
-                                               request.base_url.replace('/survey', '/static/js/main.js')],
+                                               "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"],
                             "html_embed": await render_template("formats/upload_survey_template.html.jinja",
                                                                 content_settings=config_content,
-                                                                upload_settings=config_upload),
+                                                                upload_settings=config_upload,
+                                                                base_url=request.base_url),
                             "js_embed": await render_template("formats/upload_survey_script.js.jinja",
                                                               content_settings=config_content,
                                                               upload_settings=config_upload,
-                                                              sid=sid_placeholder),
-                            "js_embed_suvey_id_placeholder": sid_placeholder}), 200
+                                                              sid=placeholder_sid,
+                                                              libarchivejs=placeholder_libarchivejs,
+                                                              base_url=request.base_url),
+                            "js_embed_placeholder_surveyid": placeholder_sid,
+                            "js_embed_placeholder_libarchivejs": placeholder_libarchivejs}), 200
 
 
 def create_app(

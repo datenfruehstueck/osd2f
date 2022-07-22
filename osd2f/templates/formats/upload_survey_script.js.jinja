@@ -1,14 +1,14 @@
+// main settings
 window.settings = {{ upload_settings.json(ensure_ascii=False)|safe }};
 window.content = {{ content_settings.json(ensure_ascii=False)|safe }};
+window.libarchivejs = {{libarchivejs|tojson|safe}};
 let sid = {{sid|tojson|safe}};
 window.sid = sid;
 
 let dropArea = document.getElementById("drop-area");
-
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false)
 })
-
 function preventDefaults(e) {
     e.preventDefault()
     e.stopPropagation()
@@ -17,18 +17,21 @@ function preventDefaults(e) {
 ['dragenter', 'dragover'].forEach(eventName => {
     dropArea.addEventListener(eventName, highlight, false)
 });
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false)
-})
-
 function highlight(e) {
     dropArea.classList.add('highlight')
 }
 
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false)
+})
 function unhighlight(e) {
     dropArea.classList.remove('highlight')
 }
 
 // tracking whether the donation has been completed is disabled but this variable is needed nevertheless
 let noDonationYet=true
+
+// load main.js from OSD2F and thus initiate data-donation process
+let main_script = document.createElement('script')
+main_script.src = "{{base_url|replace('/survey', '/static/js/main.js')}}"
+document.body.appendChild(main_script)
