@@ -20,7 +20,8 @@ from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger
 
 options: typing.Dict[str, typing.Callable[[typing.Dict, str], typing.Awaitable]] = {
-    redact_text.__name__: redact_text  # noqa
+    redact_text.__name__: redact_text,  # noqa
+    anonymize_likes.__name__: anonymize_likes  # noqa
 }
 
 
