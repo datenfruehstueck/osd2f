@@ -3,7 +3,9 @@
     <div class="mb-3">
       <b-row>
         <b-col lg>
-          {{"File: "}} <b>{{filedata.filename }}</b>
+            <!-- @Todo Textbausteine in Code übernehmen -->
+            <!-- @Todo npm install --save moment -->
+          Datei: <b>{{filedata.filename }}</b>
         </b-col>
         <b-col lg>
             {{content.preview_component.entries_in_file_text}} <b>{{ this.rows }}</b>
