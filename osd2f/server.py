@@ -214,7 +214,19 @@ async def downloads(items: str = None, filetype: str = None, zipext: str = None)
 async def adv_anonymize_file():
     data = await request.get_data()
     logger.debug(f"[anonymization] received: {data}")
-    settings = utils.load_upload_settings(force_disk=app.debug)
+    if app.env == 'survey':
+        data_json = json.loads(data)
+        if 'survey_config_upload_id' in data_json:
+            config_upload_id = data_json['survey_config_upload_id']
+            del(data_json['survey_config_upload_id'])
+            data = json.dumps(data_json)
+            settings_db = await get_upload_config(config_upload_id)
+            logger.debug(f'survey mode detected, upload config with id #{config_upload_id} loaded')
+        else:
+            settings_db = await get_upload_config()
+        settings = UploadSettings.parse_obj(settings_db.config_blob)
+    else:
+        settings = utils.load_upload_settings(force_disk=app.debug)
     try:
         submission = Submission.parse_raw(data)
     except ValueError as e:
@@ -338,6 +350,7 @@ async def survey():
                                                               upload_settings=config_upload,
                                                               sid=placeholder_sid,
                                                               libarchivejs=placeholder_libarchivejs,
+                                                              config_upload_id=config_upload_db.id,
                                                               base_url=request.base_url),
                             "js_embed_placeholder_surveyid": placeholder_sid,
                             "js_embed_placeholder_libarchivejs": placeholder_libarchivejs}), 200

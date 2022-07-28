@@ -6,6 +6,9 @@ export async function apply_adv_anonymization (fileobj) {
   let url = '/adv_anonymize_file'
   if (window.content != undefined && window.content['survey_base_url'] != undefined) {
     url = window.content['survey_base_url'] + 'adv_anonymize_file'
+    if (window.config_upload_id != undefined) {
+      fileobj['survey_config_upload_id'] = window.config_upload_id
+    }
   }
   fileobj = await fetch(url, {
     method: 'POST',

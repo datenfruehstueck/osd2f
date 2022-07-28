@@ -26,12 +26,19 @@ async def get_content_config() -> typing.Optional[DBConfigurationBlobs]:
     return config_item
 
 
-async def get_upload_config() -> typing.Optional[DBConfigurationBlobs]:
-    config_item = (
-        await DBConfigurationBlobs.filter(config_type="upload")
-        .order_by("-insert_timestamp")
-        .first()
-    )
+async def get_upload_config(config_id: int = None) -> typing.Optional[DBConfigurationBlobs]:
+    if config_id is None:
+        config_item = (
+            await DBConfigurationBlobs.filter(config_type="upload")
+            .order_by("-insert_timestamp")
+            .first()
+        )
+    else:
+        config_item = (
+            await DBConfigurationBlobs.filter(config_type="upload")
+            .filter(id=config_id)
+            .first()
+        )
     return config_item
 
 

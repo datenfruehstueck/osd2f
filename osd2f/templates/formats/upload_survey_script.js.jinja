@@ -2,6 +2,7 @@
 window.settings = {{ upload_settings.json(ensure_ascii=False)|safe }};
 window.content = {{ content_settings.json(ensure_ascii=False)|safe }};
 window.libarchivejs = {{libarchivejs|tojson|safe}};
+window.config_upload_id = {{config_upload_id|safe}};
 let sid = {{sid|tojson|safe}};
 window.sid = sid;
 
