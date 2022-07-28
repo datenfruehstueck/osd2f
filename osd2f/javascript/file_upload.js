@@ -272,7 +272,7 @@ export async function fileSelectHandler(e) {
   }
 
   // if there is one file, which is an archive
-  if (RegExp('.*.zip$').exec(filesSelected[0].name) != null) {
+  if (filesSelected.length == 1 && RegExp('.*.zip$').exec(filesSelected[0].name) != null) {
     server.log('INFO', 'file select is archive', sid)
 
     let archiveContent = await Archive.open(filesSelected[0])
