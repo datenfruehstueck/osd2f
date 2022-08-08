@@ -93,7 +93,7 @@ export const fileLoadController = async function (sid, settings, files) {
     files.map(file => {
       let nameRegex
       for (nameRegex of Object.keys(settings.files)) {
-        if (RegExp(nameRegex).exec(file.name)) {
+        if (file != undefined && file.name != undefined && RegExp(nameRegex).exec(file.name)) {
           return [file.name, nameRegex]
         }
       }

@@ -80,6 +80,14 @@ class PreviewComponent(BaseModel):
     remove_rows_button: str
     search_prompt: str
     search_box_placeholder: str
+    file_text: Optional[str]
+    entries_per_page_text: Optional[str]
+    today_text: Optional[str]
+    close_text: Optional[str]
+    startdate_text: Optional[str]
+    enddate_text: Optional[str]
+    no_matches_text: Optional[str]
+    show_all_text: Optional[str]
 
 
 class ConsentPopup(BaseModel):
