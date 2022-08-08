@@ -15,7 +15,6 @@ import re
 import typing
 
 from .sample_platform import redact_text
-from .instagram import anonymize_likes
 from .facebook import fb_anonymize_reactions, fb_anonymize_comments, fb_anonymize_usernames
 from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger

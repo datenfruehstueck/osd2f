@@ -64,9 +64,6 @@ class Survey(Production):
     BLOCK_RENDERING = True
     SURVEY_TOKEN = _os.environ.get("OSD2F_SURVEY_TOKEN")
 
-    BIND = "127.0.0.1"
-    PORT = 5000
-
     # changing Umlaute-JSON behavior here
     # note that in the database, ASCII-translated chars are stored, though (e.g., \u00fc instaed of ü)
     # this can also be fixed by simply installing the orjson package in the venv which will cause tortoise to use
