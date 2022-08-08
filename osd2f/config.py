@@ -60,11 +60,9 @@ class Production(Config):
     SESSION_COOKIE_SECURE = True  # required HTTPS server
 
 
-# @ToDo change into "Production" as super class
-class Survey(Development):
+class Survey(Production):
     BLOCK_RENDERING = True
-    # @ToDo remove comment on next line
-    #SURVEY_TOKEN = _os.environ.get("OSD2F_SURVEY_TOKEN")
+    SURVEY_TOKEN = _os.environ.get("OSD2F_SURVEY_TOKEN")
 
     # changing Umlaute-JSON behavior herer
     # note that in the database, ASCII-translated chars are stored, though (e.g., \u00fc instaed of ü)
