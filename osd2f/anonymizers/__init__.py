@@ -16,12 +16,16 @@ import typing
 
 from .sample_platform import redact_text
 from .instagram import anonymize_likes
+from .facebook import fb_anonymize_reactions, fb_anonymize_comments, fb_anonymize_usernames
 from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger
 
 options: typing.Dict[str, typing.Callable[[typing.Dict, str], typing.Awaitable]] = {
     redact_text.__name__: redact_text,  # noqa
-    anonymize_likes.__name__: anonymize_likes  # noqa
+    fb_anonymize_reactions.__name__: fb_anonymize_reactions,  # noqa
+    fb_anonymize_comments.__name__: fb_anonymize_comments,  # noqa
+    fb_anonymize_usernames.__name__: fb_anonymize_usernames  # noqa
+
 }
 
 
