@@ -19,7 +19,6 @@ DISK_CONTENT_CONFIG_PATH: str = str(
     .joinpath("default_content_settings.yaml")
 )
 DISK_CONFIG_VERSION = ""
-OSD2F_VERSION = "0.1.1"
 
 
 @functools.lru_cache
