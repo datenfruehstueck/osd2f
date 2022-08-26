@@ -24,18 +24,33 @@ This page describes how this integration is specified. Ideally, this should help
 
 OSD2F has to be run in "survey" mode. This is ensured through the respective mode setting (e.g., `-m Survey`). Moreover, a secret server token has to be set, against which the survey tool can "authenticate." The secret server token has to be set as a `OSD2F_SURVEY_TOKEN` environment variable. 
 
-If you were to [deploy OSD2F as a container](deploying_as_a_container.md), you could, for example, use the following configuration:
+### Deployment
 
-```bash
-docker run -it \
-    -e OSD2F_MODE="Survey" \
-    -e OSD2F_BASIC_AUTH='user;pass' \
-    -e OSD2F_SECRET="a big secret here" \
-    -e OSD2F_DB_URL="sqlite://:memory:" \
-    -e OSD2F_SURVEY_TOKEN="another big secret" \
-    -p 8000:8000 \
-    osd2f
-```
+It is necessary that OSD2F in survey mode runs via HTTPS for survey tools to be able to properly include them. As such, make sure to have a server up and running that is capable of handling valid (i.e., signed) HTTPS requests. One possible setup could look as follows:
+
+- set up a publicly reachable *nix server (e.g., CentOS, Ubuntu ...) with port 443/TCP open
+- using [Let's Encrypt](https://letsencrypt.org/) via the [certbot](https://certbot.eff.org/instructions), create an SSL certificate
+- create a new directory which will be shared with the Docker container later and copy/paste your newly create SSL certificate into it:
+  ```bash
+  mkdir osd2f-docker-mount
+  cp /etc/letsencrypt/live/yourdomain/privkey.pem osd2f-docker-mount/key.pem
+  cp /etc/letsencrypt/live/yourdomain/fullchain.pem osd2f-docker-mount/cert.pem
+  ```
+- clone this Git repository into your machine and edit the Dockerfile-survey
+  - make sure to set *OSD2F_SECRET*
+  - and do not forget to also set *OSD2F_SURVEY_TOKEN*
+- build your Docker (a bit like when [deploying OSD2F as a container](deploying_as_a_container.md)), but via the provided [Dockerfile-survey](/Dockerfile-survey):
+  ```bash
+  git clone https://github.com/datenfruehstueck/osd2f
+  cd osd2f
+  docker build -t osd2f -f Dockerfile-survey ./
+  ```
+- run your new Docker container by binding its internal to the server's public SSL port while mounting your shared directory into it
+  ```bash
+  docker run -itd --mount type=bind,source=/home/youruser/osd2f-docker-mount,target=/osd2f/mount -p 443:8443 osd2f
+  ```
+- communicate to the survey tool what you have set in *OSD2F_SURVEY_TOKEN*
+- find the database osd2f.sqlite inside the mounted directory
 
 ### survey tool server configuration
 
