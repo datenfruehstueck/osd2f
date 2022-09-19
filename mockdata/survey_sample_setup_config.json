@@ -6,9 +6,7 @@
   "upload": {
     "(^|/|\\)comments.json": {
       "in_key": "comment_information",
-      "anonymizers": [
-        { "redact_text": "" }
-      ],
+      "anonymizers": [],
       "accepted_fields": [
         "timestamp",
         "title",
