@@ -1,0 +1,66 @@
+{
+  "token": "OSD2F_SURVEY_TOKEN",
+  "project_title": "my data donation project",
+  "admin_email": "admin@mail.com",
+  "js_callback_after_upload": "callback_function_name",
+  "upload": {
+    "(^|/|\\)comments.json": {
+      "in_key": "comment_information",
+      "anonymizers": [
+        { "redact_text": "" }
+      ],
+      "accepted_fields": [
+        "timestamp",
+        "title",
+        "information.comment.comment_text"
+      ]
+    }
+  },
+  "content": {
+    "blocks": [],
+    "upload_box": {
+      "explanation": [
+        "Nutzen Sie den Explorer/Finder auf Ihrem Gerät, um die heruntergeladenen Dateien/Ordner für die Spende auszuwählen. Sie können die Dateien/Ordner auch per Drag and Drop hier hin ziehen."
+      ],
+      "header": "Datei(en) auswählen:"
+    },
+    "preview_component": {
+      "title": "Ihre Datenspende",
+      "explanation": [
+        "Hier können Sie Ihre geplante Datenspende im Detail einsehen. Die Spende teilt sich möglicherweise in verschiedene Datentypen ein. Nutzen Sie die Suchleiste, um innerhalb der Daten nach Inhalten zu suchen. Um Inhalte vor der Spende zu entfernen, können Sie die entsprechende Zeile anwählen und auf 'Zeilen entfernen' klicken."
+      ],
+      "file_text": "Datei:",
+      "entries_per_page_text": "Einträge je Seite:",
+      "today_text": "Heute",
+      "close_text": "Schließen",
+      "startdate_text": "Startdatum",
+      "enddate_text": "Enddatum",
+      "no_matches_text": "Es konnten keine übereinstimmenden Ergebnisse gefunden werden.",
+      "show_all_text": "Alle anzeigen",
+      "entries_in_file_text": "Einträge in dieser Datei: ",
+      "next_file_button": "Nächste Datei",
+      "previous_file_button": "Vorherige Datei",
+      "search_prompt": "Suche",
+      "search_box_placeholder": "Suche ...",
+      "remove_rows_button": "Zeilen entfernen"
+    },
+    "consent_popup": {
+      "title": "Ich möchte meine Daten spenden",
+      "lead": "Nutzungsbedingungen:",
+      "points": [
+        "Ihre Daten spenden Sie uns für wissenschaftliche Zwecke in der zuletzt gesehenen (anonymisierten) Form.",
+        "Wir speichern diese (anonymisierten) Daten ausschließlich für wissenschaftliche Zwecke auf unseren Servern in Deutschland.",
+        "Die Daten werden nicht mit identifizierenden Merkmalen Ihrer Person, beispielsweise einer E-Mail-Adresse kombiniert."
+      ],
+      "end_text": "Indem Sie auf Bestätigen/Spenden klicken stimmen Sie unseren Nutzungsbedingungen zu.",
+      "accept_button": "Bestätigen/Spenden",
+      "decline_button": "Ablehnen"
+    },
+    "processing_text": "Bearbeitet Datei für Vorschau",
+    "empty_selection": "Das Datenformat wird nicht unterstützt oder die Datei enthält keine Daten. Haben Sie die richtige(n) Datei(n) ausgewählt?",
+    "file_indicator_text": "Einträge in Ihrer Datenspende: ",
+    "thanks_text": "Vielen Dank, dass Sie uns mit Ihrer Datenspende unterstützen!",
+    "inspect_button": "Ansehen/Filtern",
+    "donate_button": "Spenden"
+  }
+}

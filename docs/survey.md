@@ -76,7 +76,7 @@ To check for reachability and compatibility, a simple *GET* request can be posed
 
 ### setup request from survey tool to OSD2F
 
-The request is directed at the OSD2F installation's base URL with the endpoint `/survey` as a *POST* request with the following parameters.
+The request is directed at the OSD2F installation's base URL with the endpoint `/survey` as a *POST* request with the following parameters. An example with some data filled in along with German labels can be found in the [mockdata directory](../mockdata/survey_sample_setup_config.json) of this repository.
 
 ```json
 {
@@ -103,30 +103,38 @@ The request is directed at the OSD2F installation's base URL with the endpoint `
       "explanation": [],
       "header": ""
     },
-    "donate_button": "",
-    "empty_selection": "",
-    "file_indicator_text": "",
-    "inspect_button": "",
     "preview_component": {
-      "entries_in_file_text": "",
+      "title": "",
       "explanation": [],
+      "file_text": "",
+      "entries_per_page_text": ":",
+      "today_text": "",
+      "close_text": "",
+      "startdate_text": "",
+      "enddate_text": "",
+      "no_matches_text": "",
+      "show_all_text": "",
+      "entries_in_file_text": "",
       "next_file_button": "",
       "previous_file_button": "",
-      "remove_rows_button": "",
-      "search_box_placeholder": "",
       "search_prompt": "",
-      "title": ""
+      "search_box_placeholder": "",
+      "remove_rows_button": ""
     },
     "consent_popup": {
-      "accept_button": "",
-      "decline_button": "",
-      "end_text": "",
-      "lead": "",
+      "title": "",
+      "lead": ":",
       "points": [],
-      "title": ""
+      "end_text": "",
+      "accept_button": "",
+      "decline_button": ""
     },
     "processing_text": "",
-    "thanks_text": ""
+    "empty_selection": "",
+    "file_indicator_text": "",
+    "thanks_text": "",
+    "inspect_button": "",
+    "donate_button": ""
   }
 }
 ```
