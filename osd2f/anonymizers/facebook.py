@@ -930,7 +930,7 @@ list_usernames = ['1LIVE',
 
 def fb_anonymize_generic(field: str, sep_strings: list) -> str:
     for sep_string in sep_strings:
-        if sep_string[0] and sep_string[1] in field:
+        if sep_string[0] in field and sep_string[1] in field:
             names, rest = field.split(sep_string[0])
             rest_2 = rest.split(sep_string[1])[0]
             if rest_2 not in list_usernames:
