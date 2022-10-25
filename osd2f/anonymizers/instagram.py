@@ -698,7 +698,7 @@ insta_list_usernames = ['sonntagszeitung.ch',
                   'zueriost',
                   'zueritoday']
 
-ista_list_links = ['https://www.instagram.com/1live/',
+insta_list_links = ['https://www.instagram.com/1live/',
               'https://www.instagram.com/duelmenerzeitung/',
               'https://www.instagram.com/echoonline_suedhessen/',
               'https://www.instagram.com/esdiariocom/',

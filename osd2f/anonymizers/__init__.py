@@ -14,7 +14,6 @@ Register
 import re
 import typing
 
-from .sample_platform import redact_text
 from .facebook import fb_anonymize_reactions, fb_anonymize_comments, fb_anonymize_usernames
 from .instagram import insta_anonymize_text, insta_anonymize_usernames, insta_anonymize_following
 from .twitter import twitter_anonymize_handles
@@ -22,11 +21,10 @@ from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger
 
 options: typing.Dict[str, typing.Callable[[typing.Dict, str], typing.Awaitable]] = {
-    'redact_text': redact_text,  # noqa
     'fb_anonymize_reactions': fb_anonymize_reactions,  # noqa
     'fb_anonymize_comments': fb_anonymize_comments,  # noqa
-    'fb_anonymize_usernames': fb_anonymize_usernames,  # noqa
     'insta_anonymize_text': insta_anonymize_text,  # noqa
+    'fb_anonymize_usernames': fb_anonymize_usernames,  # noqa
     'insta_anonymize_usernames': insta_anonymize_usernames,  # noqa
     'insta_anonymize_following': insta_anonymize_following,  # noqa
     'twitter_anonymize_handles': twitter_anonymize_handles  # noqa
