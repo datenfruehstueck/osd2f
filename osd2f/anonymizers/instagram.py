@@ -2,7 +2,7 @@ import typing
 import re
 
 
-list_usernames = ['sonntagszeitung.ch',
+insta_list_usernames = ['sonntagszeitung.ch',
                   'winterthurer_zeitung',
                   '_free21_',
                   '_theoklahoman',
@@ -698,7 +698,7 @@ list_usernames = ['sonntagszeitung.ch',
                   'zueriost',
                   'zueritoday']
 
-list_links = ['https://www.instagram.com/1live/',
+ista_list_links = ['https://www.instagram.com/1live/',
               'https://www.instagram.com/duelmenerzeitung/',
               'https://www.instagram.com/echoonline_suedhessen/',
               'https://www.instagram.com/esdiariocom/',
@@ -1157,7 +1157,7 @@ list_links = ['https://www.instagram.com/1live/',
 
 
 def insta_anonymize_generic_re_callback(match):
-    if match.group(0)[1:] not in list_usernames:
+    if match.group(0)[1:] not in insta_list_usernames:
         return "@<user>"
     else:
         return match.group(0)
@@ -1175,13 +1175,13 @@ async def insta_anonymize_text(entry: typing.Dict[str, typing.Any], text_field: 
 
 async def insta_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') -> typing.Dict[str, typing.Any]:
     if username_field in entry:
-        if entry[username_field] not in list_usernames:
+        if entry[username_field] not in insta_list_usernames:
             entry[username_field] = '<user>'
     return entry
 
 
 async def insta_anonymize_following(entry: typing.Dict[str, typing.Any], following_field: str = '') -> typing.Dict[str, typing.Any]:
     if following_field in entry:
-        if entry[following_field].replace('?hl=de', '') not in list_links:
+        if entry[following_field].replace('?hl=de', '') not in insta_list_links:
             entry[following_field] = 'https://www.instagram.com/USER'
     return entry

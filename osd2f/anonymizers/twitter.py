@@ -1,7 +1,7 @@
 import typing
 import re
 
-list_usernames = ['@__nachrichten__',
+twitter_list_usernames = ['@__nachrichten__',
                   '@_HORIZONT',
                   '@_rontaler',
                   '@_Wochenblatt',
@@ -823,7 +823,7 @@ list_usernames = ['@__nachrichten__',
 
 
 def twitter_anonymize_generic_re_callback(match):
-    if match.group(0) not in list_usernames:
+    if match.group(0) not in twitter_list_usernames:
         return "@<user>"
     else:
         return match.group(0)

@@ -1,7 +1,7 @@
 import typing
 
 
-list_usernames = ['1LIVE',
+fb_list_usernames = ['1LIVE',
                   '12-App',
                   '20 Minuten',
                   '3sat',
@@ -933,7 +933,7 @@ def fb_anonymize_generic(field: str, sep_strings: list) -> str:
         if sep_string[0] in field and sep_string[1] in field:
             names, rest = field.split(sep_string[0])
             rest_2 = rest.split(sep_string[1])[0]
-            if rest_2 not in list_usernames:
+            if rest_2 not in fb_list_usernames:
                 return field.replace(names, "<user> ").replace(rest_2, " <other> ")
             else:
                 return field.replace(names, "<user> ")
@@ -985,7 +985,7 @@ async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], comment_fie
 
 async def fb_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') -> typing.Dict[str, typing.Any]:
     if username_field in entry:
-        if entry[username_field] not in list_usernames:
+        if entry[username_field] not in fb_list_usernames:
             entry[username_field] = '<user>'
 
     return entry
