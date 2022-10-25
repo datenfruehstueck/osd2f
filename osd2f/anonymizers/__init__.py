@@ -22,19 +22,19 @@ from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger
 
 options: typing.Dict[str, typing.Callable[[typing.Dict, str], typing.Awaitable]] = {
-    redact_text.__name__: redact_text,  # noqa
-    fb_anonymize_reactions.__name__: fb_anonymize_reactions,  # noqa
-    fb_anonymize_comments.__name__: fb_anonymize_comments,  # noqa
-    fb_anonymize_usernames.__name__: fb_anonymize_usernames,  # noqa
-    fb_anonymize_userdatanames.__name__: fb_anonymize_userdatanames,  # noqa
-    fb_anonymize_usertitles.__name__: fb_anonymize_usertitles,  # noqa
-    insta_anonymize_comments.__name__: insta_anonymize_comments,  # noqa
-    insta_anonymize_usernames.__name__: insta_anonymize_usernames,  # noqa
-    insta_anonymize_following.__name__: insta_anonymize_following,  # noqa
-    insta_anonymize_value.__name__: insta_anonymize_value,  # noqa
-    insta_anonymize_likes.__name__: insta_anonymize_likes,  # noqa
-    twitter_anonymize_likes.__name__: twitter_anonymize_likes,  # noqa
-    twitter_anonymize_tweets.__name__: twitter_anonymize_tweets  # noqa
+    'redact_text': redact_text,  # noqa
+    'fb_anonymize_reactions': fb_anonymize_reactions,  # noqa
+    'fb_anonymize_comments': fb_anonymize_comments,  # noqa
+    'fb_anonymize_usernames': fb_anonymize_usernames,  # noqa
+    'fb_anonymize_userdatanames': fb_anonymize_userdatanames,  # noqa
+    'fb_anonymize_usertitles': fb_anonymize_usertitles,  # noqa
+    'insta_anonymize_comments': insta_anonymize_comments,  # noqa
+    'insta_anonymize_usernames': insta_anonymize_usernames,  # noqa
+    'insta_anonymize_following': insta_anonymize_following,  # noqa
+    'insta_anonymize_value': insta_anonymize_value,  # noqa
+    'insta_anonymize_likes': insta_anonymize_likes,  # noqa
+    'twitter_anonymize_likes': twitter_anonymize_likes,  # noqa
+    'twitter_anonymize_tweets': twitter_anonymize_tweets  # noqa
 }
 
 
