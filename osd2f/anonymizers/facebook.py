@@ -964,8 +964,8 @@ async def fb_anonymize_reactions(entry: typing.Dict[str, typing.Any], _: str = '
     return entry
 
 
-async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "title" in entry:
+async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], comment_field: str = '') -> typing.Dict[str, typing.Any]:
+    if comment_field in entry:
         sep_strings = [
             # en
             ["commented", "own post."],
@@ -978,30 +978,14 @@ async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], _: str = ''
             ["hat", "Beitrag kommentiert."],
             ["hat", "eigenen Beitrag kommentiert."]
         ]
-        entry["title"] = fb_anonymize_generic(entry['title'], sep_strings)
+        entry[comment_field] = fb_anonymize_generic(entry[comment_field], sep_strings)
 
     return entry
 
 
-async def fb_anonymize_usernames(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "name" in entry:
-        if entry['name'] not in list_usernames:
-            entry['name'] = '<user>'
-
-    return entry
-
-
-async def fb_anonymize_userdatanames(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "data.name" in entry:
-        if entry['data.name'] not in list_usernames:
-            entry['data.name'] = '<user>'
-
-    return entry
-
-
-async def fb_anonymize_usertitles(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "title" in entry:
-        if entry['title'] not in list_usernames:
-            entry['title'] = '<user>'
+async def fb_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') -> typing.Dict[str, typing.Any]:
+    if username_field in entry:
+        if entry[username_field] not in list_usernames:
+            entry[username_field] = '<user>'
 
     return entry

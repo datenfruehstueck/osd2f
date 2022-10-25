@@ -1167,37 +1167,21 @@ def insta_anonymize_generic(field: str) -> str:
     return re.sub('@[a-zA-Z0-9_.]+', insta_anonymize_generic_re_callback, field)
 
 
-async def insta_anonymize_comments(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "Kommentar" in entry:
-        entry["Kommentar"] = insta_anonymize_generic(entry['Kommentar'])
-    # english version missing
+async def insta_anonymize_text(entry: typing.Dict[str, typing.Any], text_field: str = '') -> typing.Dict[str, typing.Any]:
+    if text_field in entry:
+        entry[text_field] = insta_anonymize_generic(entry[text_field])
     return entry
 
 
-async def insta_anonymize_usernames(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "Medieneigentümer" in entry:
-        if entry['Medieneigentümer'] not in list_usernames:
-            entry['Medieneigentümer'] = '<user>'
-    # english version missing
+async def insta_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') -> typing.Dict[str, typing.Any]:
+    if username_field in entry:
+        if entry[username_field] not in list_usernames:
+            entry[username_field] = '<user>'
     return entry
 
 
-async def insta_anonymize_following(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "string_list_data.href" in entry:
-        if entry['string_list_data.href'].replace('?hl=de', '') not in list_links:
-            entry['string_list_data.href'] = 'https://www.instagram.com/USER'
-    return entry
-
-
-async def insta_anonymize_value(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "string_list_data.value" in entry:
-        if entry['string_list_data.value'] not in list_usernames:
-            entry['string_list_data.value'] = '<user>'
-    return entry
-
-
-async def insta_anonymize_likes(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "title" in entry:
-        if entry['title'] not in list_usernames:
-            entry['title'] = '<user>'
+async def insta_anonymize_following(entry: typing.Dict[str, typing.Any], following_field: str = '') -> typing.Dict[str, typing.Any]:
+    if following_field in entry:
+        if entry[following_field].replace('?hl=de', '') not in list_links:
+            entry[following_field] = 'https://www.instagram.com/USER'
     return entry

@@ -833,13 +833,7 @@ def twitter_anonymize_generic(field: str) -> str:
     return re.sub('@[a-zA-Z0-9_]+', twitter_anonymize_generic_re_callback, field)
 
 
-async def twitter_anonymize_likes(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "like.fullText" in entry:
-        entry["like.fullText"] = twitter_anonymize_generic(entry['like.fullText'])
-    return entry
-
-
-async def twitter_anonymize_tweets(entry: typing.Dict[str, typing.Any], _: str = '') -> typing.Dict[str, typing.Any]:
-    if "tweet.full_text" in entry:
-        entry["tweet.full_text"] = twitter_anonymize_generic(entry['tweet.full_text'])
+async def twitter_anonymize_handles(entry: typing.Dict[str, typing.Any], text_field: str = '') -> typing.Dict[str, typing.Any]:
+    if text_field in entry:
+        entry[text_field] = twitter_anonymize_generic(entry[text_field])
     return entry

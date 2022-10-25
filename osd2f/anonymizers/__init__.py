@@ -15,9 +15,9 @@ import re
 import typing
 
 from .sample_platform import redact_text
-from .facebook import fb_anonymize_reactions, fb_anonymize_comments, fb_anonymize_usernames, fb_anonymize_userdatanames, fb_anonymize_usertitles
-from .instagram import insta_anonymize_comments, insta_anonymize_usernames, insta_anonymize_following, insta_anonymize_value, insta_anonymize_likes
-from .twitter import twitter_anonymize_tweets, twitter_anonymize_likes
+from .facebook import fb_anonymize_reactions, fb_anonymize_comments, fb_anonymize_usernames
+from .instagram import insta_anonymize_text, insta_anonymize_usernames, insta_anonymize_following
+from .twitter import twitter_anonymize_handles
 from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger
 
@@ -26,15 +26,10 @@ options: typing.Dict[str, typing.Callable[[typing.Dict, str], typing.Awaitable]]
     'fb_anonymize_reactions': fb_anonymize_reactions,  # noqa
     'fb_anonymize_comments': fb_anonymize_comments,  # noqa
     'fb_anonymize_usernames': fb_anonymize_usernames,  # noqa
-    'fb_anonymize_userdatanames': fb_anonymize_userdatanames,  # noqa
-    'fb_anonymize_usertitles': fb_anonymize_usertitles,  # noqa
-    'insta_anonymize_comments': insta_anonymize_comments,  # noqa
+    'insta_anonymize_text': insta_anonymize_text,  # noqa
     'insta_anonymize_usernames': insta_anonymize_usernames,  # noqa
     'insta_anonymize_following': insta_anonymize_following,  # noqa
-    'insta_anonymize_value': insta_anonymize_value,  # noqa
-    'insta_anonymize_likes': insta_anonymize_likes,  # noqa
-    'twitter_anonymize_likes': twitter_anonymize_likes,  # noqa
-    'twitter_anonymize_tweets': twitter_anonymize_tweets  # noqa
+    'twitter_anonymize_handles': twitter_anonymize_handles  # noqa
 }
 
 
