@@ -7,8 +7,17 @@ or by omitting entries entirely (e.g. returning None for some entries).
 All anonymization functions should have the (entry, optional_string_param)
 signature.
 
-Register
+Anonymization here generally means to replace username/pages with a generic "<user>", unless the username is known
+as a media outlet's user. Lists of respective usernames are hard-coded here for the German-speaking context.
 
+Register:
+- fb_anonymize_reactions: anonymizes "x likes y's post"-like strings
+- fb_anonymize_comments: anonymizes "x commented on its own post"-like strings
+- fb_anonymize_usernames: anonymizes simple usernames (e.g., in following lists)
+- insta_anonymize_text: anonymizes mentioned users in a text (with multiple occurrences also)
+- insta_anonymize_usernames: anonymizes simple usernames (e.g., in following lists)
+- insta_anonymize_following: anonymizes follow lists which contain URLs to user profiles
+- twitter_anonymize_handlesanonymizes mentioned users in a text (with multiple occurrences also)
 """
 
 import re
