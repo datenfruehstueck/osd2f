@@ -946,8 +946,8 @@ async def fb_anonymize_reactions(entry: typing.Dict[str, typing.Any], _: str = '
             ["likes", "own post."],
             ["liked", "this."],
             ["reacted to", "post."],
-            ["likes", "post."],
-            ["likes", "photo"],
+            ["likes", "post"],
+            ["likes", "photo."],
             ["likes", "comment."],
             ["reacted to", "comment."],
             # de
@@ -972,6 +972,7 @@ async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], comment_fie
             ["replied", "own comment."],
             ["commented on", "video."],
             ["commented on", "post."],
+            ["posted a comment on the post by", "."],
             # de
             ["hat auf", "Kommentar geantwortet."],
             ["hat", "Foto kommentiert."],
