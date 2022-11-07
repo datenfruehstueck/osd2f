@@ -1,4 +1,5 @@
 import typing
+import re
 
 fb_list_usernames = ['1LIVE',
                      '12-App',
@@ -931,11 +932,11 @@ def fb_anonymize_generic(field: str, sep_strings: list) -> str:
     for sep_string in sep_strings:
         if sep_string[0] in field and sep_string[1] in field:
             names, rest = field.split(sep_string[0])
-            rest_2 = rest.split(sep_string[1])[0]
-            if rest_2 not in fb_list_usernames:
-                return field.replace(names, "<user> ").replace(rest_2, " <other> ")
-            else:
+            rest_2 = rest.split(sep_string[1])[0].strip()
+            if any(re.match(rest_2 + "?", item) for item in fb_list_usernames):
                 return field.replace(names, "<user> ")
+            else:
+                return field.replace(names, "<user> ").replace(rest_2, "<other>")
     return field
 
 
@@ -944,19 +945,32 @@ async def fb_anonymize_reactions(entry: typing.Dict[str, typing.Any], _: str = '
         sep_strings = [
             # en
             ["likes", "own post."],
+            ["liked", "own post."],
+            ["likes", "this."],
             ["liked", "this."],
-            ["reacted to", "post."],
-            ["likes", "post"],
+            ["likes", "post."],
+            ["liked", "post."],
+            ["likes", "post in"],
+            ["liked", "post in"],
             ["likes", "photo."],
+            ["liked", "photo."],
             ["likes", "comment."],
+            ["liked", "comment."],
+            ["likes", "video."],
+            ["liked", "video."],
+            ["reacted to", "post."],
             ["reacted to", "comment."],
+
             # de
             ["gefällt", "eigenen Chronik."],
             ["gefällt", "Beitrag"],
+            ["gefällt", "Beitrag in"],
+            ["gefällt", "Beitrag auf"],
             ["gefällt", "Kommentar."],
             ["gefällt", "Foto."],
             ["gefällt", "Video."],
-            ["hat", "einen Beitrag reagiert."]
+            ["hat", "Beitrag reagiert."],
+            ["hat", "Kommentar reagiert."]
         ]
         entry["title"] = fb_anonymize_generic(entry['title'], sep_strings)
 
@@ -970,13 +984,16 @@ async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], comment_fie
             # en
             ["commented", "own post."],
             ["replied", "own comment."],
+            ["replied to", "comment."],
             ["commented on", "video."],
             ["commented on", "post."],
+            ["commented on", "photo."],
             ["posted a comment on the post by", "."],
             # de
             ["hat auf", "Kommentar geantwortet."],
             ["hat", "Foto kommentiert."],
             ["hat", "Beitrag kommentiert."],
+            ["hat", "Video kommentiert."],
             ["hat", "eigenen Beitrag kommentiert."]
         ]
         entry[comment_field] = fb_anonymize_generic(entry[comment_field], sep_strings)

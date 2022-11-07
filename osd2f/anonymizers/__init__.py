@@ -17,7 +17,9 @@ Register:
 - insta_anonymize_text: anonymizes mentioned users in a text (with multiple occurrences also)
 - insta_anonymize_usernames: anonymizes simple usernames (e.g., in following lists)
 - insta_anonymize_following: anonymizes follow lists which contain URLs to user profiles
-- twitter_anonymize_handlesanonymizes mentioned users in a text (with multiple occurrences also)
+- twitter_anonymize_handles: anonymizes mentioned users in a text (with multiple occurrences also)
+- twitter_anonymize_usernames: anonymizes simple usernames (without @)
+- youtube_extract_timestamp: extracts UTC timestamp from string
 """
 
 import re
@@ -26,6 +28,7 @@ import typing
 from .facebook import fb_anonymize_reactions, fb_anonymize_comments, fb_anonymize_usernames
 from .instagram import insta_anonymize_text, insta_anonymize_usernames, insta_anonymize_following
 from .twitter import twitter_anonymize_handles
+from .youtube import youtube_extract_timestamp
 from ..definitions import Submission, SubmissionList, UploadSettings
 from ..logger import logger
 
@@ -36,7 +39,8 @@ options: typing.Dict[str, typing.Callable[[typing.Dict, str], typing.Awaitable]]
     'fb_anonymize_usernames': fb_anonymize_usernames,  # noqa
     'insta_anonymize_usernames': insta_anonymize_usernames,  # noqa
     'insta_anonymize_following': insta_anonymize_following,  # noqa
-    'twitter_anonymize_handles': twitter_anonymize_handles  # noqa
+    'twitter_anonymize_handles': twitter_anonymize_handles,  # noqa
+    'youtube_extract_timestamp': youtube_extract_timestamp  # noqa
 }
 
 
