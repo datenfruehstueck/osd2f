@@ -26,4 +26,4 @@ RUN osd2f --dry-run
 
 # set the default command for the container (i.e. running production)
 # all logging outputs will be written to the Docker log
-CMD [ "hypercorn", "--keyfile", "mount/key.pem", "--certfile", "mount/cert.pem", "-b", "0.0.0.0:8443", "--access-log", "-", "--error-log", "-", "osd2f.__main__:app" ]
+CMD [ "hypercorn", "--keyfile", "mount/key.pem", "--certfile", "mount/cert.pem", "-b", "0.0.0.0:8443", "--access-logfile", "-", "--error-logfile", "-", "osd2f.__main__:app" ]
