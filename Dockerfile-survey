@@ -12,13 +12,18 @@ COPY ./ /osd2f
 WORKDIR /osd2f
 
 # setup dependencies
-RUN mkdir mount
+RUN apt-get update && apt-get install -yfq sqlite3 git
+
+# OSD2F
+RUN git clone https://github.com/datenfruehstueck/osd2f
+WORKDIR /osd2f
 RUN pip install ./
-RUN apt-get update && apt-get install -yfq sqlite3
+RUN mkdir mount
 RUN sqlite3 mount/osd2f.sqlite
 
 # minimal check to make sure the install works
 RUN osd2f --dry-run
 
 # set the default command for the container (i.e. running production)
-CMD [ "hypercorn", "--keyfile", "mount/key.pem", "--certfile", "mount/cert.pem", "-b", "0.0.0.0:8443", "osd2f.__main__:app" ]
+# all logging outputs will be written to the Docker log
+CMD [ "hypercorn", "--keyfile", "mount/key.pem", "--certfile", "mount/cert.pem", "-b", "0.0.0.0:8443", "--access-log", "-", "--error-log", "-", "osd2f.__main__:app" ]
