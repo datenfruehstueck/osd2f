@@ -60,6 +60,7 @@ export default {
         mode: 'no-cors',
         //credentials: 'same-origin',
         credentials: 'omit',
+        cache: 'no-store',
         headers: {
           'Content-Type': 'application/json'
         },

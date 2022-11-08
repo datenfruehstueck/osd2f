@@ -123,7 +123,8 @@ export default {
     fields.forEach(f => {
       let o = new Object
       o[f] = {"label": f,
-              "sortable" : true}
+              "sortable" : true,
+              "thStyle": { overflow: "auto" }}
       if(RegExp('.*timestamp$', 'i').exec(f)) {
         o[f]['formatter'] = (value, key, item) => {
           if ((new Date(value)). getTime() > 0) {

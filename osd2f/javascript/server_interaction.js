@@ -16,6 +16,7 @@ export async function apply_adv_anonymization (fileobj) {
     mode: 'cors',
     //credentials: 'same-origin',
     credentials: 'omit',
+    cache: 'no-store',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -57,7 +58,8 @@ export const server = {
       //mode: 'same-origin',
       mode: 'no-cors',
       //credentials: 'same-origin'
-      credentials: 'omit'
+      credentials: 'omit',
+      cache: 'no-store'
     })
       .then(r => {})
       .catch(e => {
