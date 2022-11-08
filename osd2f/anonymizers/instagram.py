@@ -1,5 +1,7 @@
 import typing
 import re
+from .genuine import unravel_hierarchical_fields
+
 
 insta_list_usernames = ['sonntagszeitung.ch',
                         'winterthurer_zeitung',
@@ -1409,15 +1411,18 @@ async def insta_anonymize_text(entry: typing.Dict[str, typing.Any], text_field: 
         -> typing.Dict[str, typing.Any]:
     if text_field in entry:
         entry[text_field] = insta_anonymize_generic(entry[text_field])
+    elif text_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, text_field, insta_anonymize_text)
     return entry
 
 
 async def insta_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') \
         -> typing.Dict[str, typing.Any]:
-    print(entry)
     if username_field in entry:
         if entry[username_field] not in insta_list_usernames:
             entry[username_field] = '<user>'
+    elif username_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, username_field, insta_anonymize_usernames)
     return entry
 
 
@@ -1426,4 +1431,6 @@ async def insta_anonymize_following(entry: typing.Dict[str, typing.Any], followi
     if following_field in entry:
         if entry[following_field].replace('?hl=de', '') not in insta_list_links:
             entry[following_field] = 'https://www.instagram.com/USER'
+    elif following_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, following_field, insta_anonymize_following)
     return entry

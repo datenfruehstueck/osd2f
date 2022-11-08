@@ -1,5 +1,6 @@
 import typing
 import re
+from .genuine import unravel_hierarchical_fields
 
 
 async def youtube_extract_timestamp(entry: typing.Dict[str, typing.Any], text_field: str = '') \
@@ -9,4 +10,6 @@ async def youtube_extract_timestamp(entry: typing.Dict[str, typing.Any], text_fi
                                entry[text_field])
         if text_match:
             entry[text_field] = text_match.group(0)
+    elif text_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, text_field, youtube_extract_timestamp)
     return entry

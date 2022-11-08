@@ -1,5 +1,6 @@
 import typing
 import re
+from .genuine import unravel_hierarchical_fields
 
 twitter_list_usernames = ['@__nachrichten__',
                           '@_HORIZONT',
@@ -837,6 +838,8 @@ async def twitter_anonymize_handles(entry: typing.Dict[str, typing.Any], text_fi
         -> typing.Dict[str, typing.Any]:
     if text_field in entry:
         entry[text_field] = twitter_anonymize_generic(entry[text_field])
+    elif text_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, text_field, twitter_anonymize_handles)
     return entry
 
 
@@ -845,4 +848,6 @@ async def twitter_anonymize_usernames(entry: typing.Dict[str, typing.Any], usern
     if username_field in entry:
         if '@' + entry[username_field] not in twitter_list_usernames:
             entry[username_field] = '<user>'
+    elif username_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, username_field, twitter_anonymize_usernames)
     return entry

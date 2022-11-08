@@ -1,5 +1,6 @@
 import typing
 import re
+from .genuine import unravel_hierarchical_fields
 
 fb_list_usernames = ['1LIVE',
                      '12-App',
@@ -973,7 +974,6 @@ async def fb_anonymize_reactions(entry: typing.Dict[str, typing.Any], _: str = '
             ["hat", "Kommentar reagiert."]
         ]
         entry["title"] = fb_anonymize_generic(entry['title'], sep_strings)
-
     return entry
 
 
@@ -997,7 +997,8 @@ async def fb_anonymize_comments(entry: typing.Dict[str, typing.Any], comment_fie
             ["hat", "eigenen Beitrag kommentiert."]
         ]
         entry[comment_field] = fb_anonymize_generic(entry[comment_field], sep_strings)
-
+    elif comment_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, comment_field, fb_anonymize_comments)
     return entry
 
 
@@ -1006,5 +1007,6 @@ async def fb_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_f
     if username_field in entry:
         if entry[username_field] not in fb_list_usernames:
             entry[username_field] = '<user>'
-
+    elif username_field.__contains__('.'):
+        entry = await unravel_hierarchical_fields(entry, username_field, fb_anonymize_usernames)
     return entry
