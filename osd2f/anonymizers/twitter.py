@@ -835,7 +835,6 @@ def twitter_anonymize_generic(field: str) -> str:
 
 async def twitter_anonymize_handles(entry: typing.Dict[str, typing.Any], text_field: str = '') \
         -> typing.Dict[str, typing.Any]:
-
     if text_field in entry:
         entry[text_field] = twitter_anonymize_generic(entry[text_field])
     return entry
@@ -843,7 +842,6 @@ async def twitter_anonymize_handles(entry: typing.Dict[str, typing.Any], text_fi
 
 async def twitter_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') \
         -> typing.Dict[str, typing.Any]:
-
     if username_field in entry:
         if '@' + entry[username_field] not in twitter_list_usernames:
             entry[username_field] = '<user>'

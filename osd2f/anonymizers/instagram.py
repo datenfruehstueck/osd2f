@@ -1414,6 +1414,7 @@ async def insta_anonymize_text(entry: typing.Dict[str, typing.Any], text_field: 
 
 async def insta_anonymize_usernames(entry: typing.Dict[str, typing.Any], username_field: str = '') \
         -> typing.Dict[str, typing.Any]:
+    print(entry)
     if username_field in entry:
         if entry[username_field] not in insta_list_usernames:
             entry[username_field] = '<user>'
