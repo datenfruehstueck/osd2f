@@ -250,7 +250,7 @@ async def adv_anonymize_file():
     return jsonify({"error": "", "data": submission.dict()}), 200
 
 
-@app.route("/log")
+@app.route("/log", methods=["GET"])
 @route_cors(allow_origin="*")
 async def log():
     position = request.args.get("position")
