@@ -251,6 +251,7 @@ async def adv_anonymize_file():
 
 
 @app.route("/log")
+@route_cors(allow_origin="*")
 async def log():
     position = request.args.get("position")
     level = request.args.get("level")
