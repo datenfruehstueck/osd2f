@@ -26,31 +26,129 @@ OSD2F has to be run in "survey" mode. This is ensured through the respective mod
 
 ### Deployment
 
-It is necessary that OSD2F in survey mode runs via HTTPS for survey tools to be able to properly include them. As such, make sure to have a server up and running that is capable of handling valid (i.e., signed) HTTPS requests. One possible setup could look as follows:
+It is necessary that OSD2F in survey mode runs via HTTPS for survey tools to be able to properly include them. As such, make sure to have a server up and running that is capable of handling valid (i.e., signed) HTTPS requests. There are lots and lots of ways for this. We explain two of them here.
 
-- set up a publicly reachable *nix server (e.g., CentOS, Ubuntu ...) with port 443/TCP open
-- using [Let's Encrypt](https://letsencrypt.org/) via the [certbot](https://certbot.eff.org/instructions), create an SSL certificate
-- create a new directory which will be shared with the Docker container later and copy/paste your newly create SSL certificate into it:
+#### Deployment through Docker and hypercorn
+
+- set up a publicly reachable *nix server (e.g., CentOS, Ubuntu ...) with port 443/TCP open (for SSL signing you also briefly need TCP/80 briefly open) and Docker installed
+- using [Let's Encrypt](https://letsencrypt.org/) and their [prepared Docker image](https://hub.docker.com/r/certbot/certbot/), create a signed SSL certificate:
+  ```bash
+   docker run -it --rm --name certbot -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" -p 443:8443 -p 80:80 certbot/certbot certonly --standalone
+  ```
+- create a new directory which will be shared with the actual OSD2F Docker container later and copy/paste your newly create SSL certificate into it:
   ```bash
   mkdir osd2f-docker-mount
   cp /etc/letsencrypt/live/yourdomain/privkey.pem osd2f-docker-mount/key.pem
   cp /etc/letsencrypt/live/yourdomain/fullchain.pem osd2f-docker-mount/cert.pem
   ```
-- clone this Git repository into your machine and edit the Dockerfile-survey
+- get the [Dockerfile-survey](/Dockerfile-survey) from his very OSD2F-Survey Git repository and edit the Dockerfile-survey
   - make sure to set *OSD2F_SECRET*
-  - and do not forget to also set *OSD2F_SURVEY_TOKEN*
-- build your Docker (a bit like when [deploying OSD2F as a container](deploying_as_a_container.md)), but via the provided [Dockerfile-survey](/Dockerfile-survey):
+  - do not forget to set *OSD2F_SURVEY_TOKEN*
+  - check for the correct paths to your later-to-be-mounted directory (here, `osd2f-docker-mount`)
+- build your Docker (a bit like when [deploying OSD2F as a container](deploying_as_a_container.md)), but via the provided :
   ```bash
-  git clone https://github.com/datenfruehstueck/osd2f
-  cd osd2f
-  docker build -t osd2f -f Dockerfile-survey ./
+  sudo docker build -t osd2f-mounted -f Dockerfile-survey ./ 
   ```
-- run your new Docker container by binding its internal to the server's public SSL port while mounting your shared directory into it
+- run your new Docker by binding its internal to the server's public SSL port, by claiming it to restart if the server restarts, and while mounting your shared directory into it
   ```bash
-  docker run -itd --mount type=bind,source=/home/youruser/osd2f-docker-mount,target=/osd2f/mount -p 443:8443 osd2f
+  sudo docker run --restart always -itd --name osd2f --mount type=bind,target=/osd2f/mount,source=/home/USER/osd2f-docker-mount -p 443:8443 osd2f-mounted
   ```
+- The system now runs via a [hypercorn](https://pgjones.gitlab.io/hypercorn/) webserver inside a Docker container where the host server forwards traffic via iptables to the Docker (and thus, to hypercorn). This is an easy way to make it run and it is also the suggested way by the original OSD2F developers. However, it has its limitations with logging and, in the worst case, requires knowledge in iptables, Docker, and hypercorn. 
 - communicate to the survey tool what you have set in *OSD2F_SURVEY_TOKEN*
 - find the database osd2f.sqlite inside the mounted directory
+
+#### Deployment through nginx
+
+- set up a publicly reachable *nix server (here, Ubuntu is suggested) with port 443/TCP open (and for SSL signing you also briefly need TCP/80 briefly open)
+- install [unit](https://unit.nginx.org/installation/#ubuntu), a nginx module to have ASGI systems (like OSD2F) run in it:
+  ```bash
+  curl --output /usr/share/keyrings/nginx-keyring.gpg https://unit.nginx.org/keys/nginx-keyring.gpg
+  cat > /etc/apt/sources.list.d/unit.list
+  # paste the following two lines into the newly created unit.list file
+  # deb [signed-by=/usr/share/keyrings/nginx-keyring.gpg] https://packages.nginx.org/unit/ubuntu/ jammy unit
+  # deb-src [signed-by=/usr/share/keyrings/nginx-keyring.gpg] https://packages.nginx.org/unit/ubuntu/ jammy unit
+  apt update
+  apt install unit unit-dev unit-python3.10
+  systemctl restart unit
+  ```
+- using [Let's Encrypt](https://letsencrypt.org/) and [certbot](https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal) for nginx on Ubuntu, create a signed SSL certificate
+- copy the two SSL certificate files (`cert.pem` and `key.pem`) into `/var/www/ssl/`
+- add the two SSL certificate files to unit (through its rather weird [internal configuration API](https://unit.nginx.org/configuration/#certificate-management)):
+  ```bash
+  cat cert.pem key.pem > bundle.pem
+  curl -X PUT --data-binary @bundle.pem --unix-socket /var/run/control.unit.sock http://localhost/certificates/bundle
+  ```
+- install OSD2F by (1) installing sqlite3 and git, (2) cloning this repository, and (3) creating a virtual Python environment to run in:
+  ```bash
+  apt-get install -y sqlite3 git
+  git clone https://github.com/datenfruehstueck/osd2f
+  cd osd2f
+  python3.10 -v venv venv
+  source venv/bin/activate
+  pip install .
+  deactivate
+  ```
+- create a new file named `config-unit.json` and add the following specifications into it (adjust your USER as well as the respective paths):
+  ```json
+  {
+    "listeners": {
+      "127.0.0.1:8443": {
+        "pass": "applications/osd2f",
+        "tls": {
+          "certificate": "bundle"
+        }
+      }
+    },
+    "applications": {
+      "osd2f": {
+        "type": "python 3.10",
+        "protocol": "asgi",
+        "path": "/home/USER/osd2f/",
+        "home": "/home/USER/osd2f/venv/",
+        "module": "osd2f.__main__",
+        "callable": "app",
+        "user": "USER",
+        "group": "USERGROUP",
+        "environment": {
+          "OSD2F_SECRET": "your_secret",
+          "OSD2F_MODE": "Survey",
+          "OSD2F_DB_URL": "sqlite:///home/USER/osd2f/osd2f.sqlite",
+          "OSD2F_SURVEY_TOKEN": "your_token"
+        }
+      }
+    }
+  }
+  ```
+- add the config to unit (again, through its [internal configuration API](https://unit.nginx.org/howto/quart/)): 
+  ```bash
+  curl -X PUT --data-binary @config.json --unix-socket /var/run/control.unit.sock http://localhost/config/
+  ```
+- configure nginx with a so-called upstream
+  ```editorconfig
+  upstream unit_backend {
+    server 127.0.0.1:8443;
+  }
+  server {
+    listen your_ip:443 ssl;
+    ssl_certificate  /var/www/ssl/cert.pem;
+    ssl_certificate_key  /var/www/ssl/key.pem;
+    ssl_prefer_server_ciphers on;
+    access_log  /var/www/log/access.log;
+    error_log  /var/www/log/error.log;
+    location / {
+      proxy_pass https://unit_backend;
+      proxy_set_header        Host $host;
+      proxy_set_header        X-Real-IP $remote_addr;
+      proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header        X-Forwarded-Proto $scheme;
+    }
+  }
+  ```
+- restart both nginx and unit (`systemctl restart unit`)
+- The system now runs on a pure nginx webserver with a unit module enabled to allow for ASGI applications. This is a very common way of hosting web applications and is thus much better documented and logged. However, it requires some knowledge in nginx. 
+- communicate to the survey tool what you have set in *OSD2F_SURVEY_TOKEN*
+- find the database osd2f.sqlite inside the osd2f directory
+
 
 ### survey tool server configuration
 

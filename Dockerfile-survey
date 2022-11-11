@@ -7,10 +7,6 @@ ENV OSD2F_MODE="Survey"
 ENV OSD2F_DB_URL="sqlite:///osd2f/mount/osd2f.sqlite"
 ENV OSD2F_SURVEY_TOKEN=""
 
-# make code available
-COPY ./ /osd2f
-WORKDIR /osd2f
-
 # setup dependencies
 RUN apt-get update && apt-get install -yfq sqlite3 git
 
